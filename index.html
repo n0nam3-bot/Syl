@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Syl</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121933;
+      --panel-2: #182142;
+      --text: #eef2ff;
+      --muted: #a8b3d6;
+      --accent: #7c8cff;
+      --accent-2: #28d7a1;
+      --danger: #ff6b7a;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at top, #182247 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 320px 1fr;
+    }
+    .card {
+      background: rgba(18,25,51,0.86);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+    .sidebar, .main { min-height: calc(100vh - 48px); }
+    .sidebar { padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+    .main { padding: 18px; display: flex; flex-direction: column; gap: 16px; }
+    h1, h2, h3, p { margin: 0; }
+    .brand { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .logo {
+      width: 44px; height: 44px; border-radius: 14px;
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white; font-weight: 800;
+    }
+    .subtitle { color: var(--muted); font-size: 0.92rem; line-height: 1.4; }
+    .section { padding: 14px; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); }
+    label { display: block; font-size: 0.88rem; color: var(--muted); margin-bottom: 8px; }
+    input, textarea, select, button {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    button {
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), #5d6ef0);
+      border: none;
+      font-weight: 700;
+    }
+    button.secondary { background: rgba(255,255,255,0.06); border: 1px solid var(--border); }
+    button.danger { background: rgba(255,107,122,0.15); border: 1px solid rgba(255,107,122,0.35); color: #ffd6db; }
+    .row { display: grid; gap: 10px; }
+    .row.two { grid-template-columns: 1fr 1fr; }
+    .row.three { grid-template-columns: 1fr 1fr 1fr; }
+    .chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 0;
+    }
+    .messages {
+      flex: 1;
+      overflow: auto;
+      padding: 10px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      min-height: 420px;
+    }
+    .msg {
+      margin: 10px 0;
+      display: flex;
+    }
+    .bubble {
+      max-width: 85%;
+      padding: 12px 14px;
+      border-radius: 18px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      border: 1px solid var(--border);
+    }
+    .user { justify-content: flex-end; }
+    .user .bubble { background: rgba(124,140,255,0.18); }
+    .assistant .bubble { background: rgba(255,255,255,0.05); }
+    .meta { margin-top: 8px; color: var(--muted); font-size: 0.82rem; }
+    .tagbar { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag {
+      font-size: 0.78rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .composer { display: grid; gap: 10px; }
+    .status {
+      font-size: 0.85rem;
+      color: var(--muted);
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+    }
+    .small { font-size: 0.84rem; color: var(--muted); line-height: 1.45; }
+    .divider { height: 1px; background: var(--border); margin: 4px 0; }
+    .file-list { display: grid; gap: 8px; }
+    .file-item {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    code { color: #d7dcff; }
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar, .main { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="card sidebar">
+      <div class="brand">
+        <div style="display:flex; gap:12px; align-items:center;">
+          <div class="logo">S</div>
+          <div>
+            <h1>Syl</h1>
+            <div class="subtitle">Local-first AI front end for GitHub Pages</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Connection</h3>
+        <div class="small" style="margin:8px 0 12px;">
+          GitHub Pages is static hosting, so Syl’s intelligence layer connects to a backend endpoint when needed.
+        </div>
+        <label for="backendUrl">Apps Script / API endpoint</label>
+        <input id="backendUrl" placeholder="https://script.google.com/macros/s/.../exec" />
+        <div class="row two" style="margin-top:10px;">
+          <button id="saveBackend">Save</button>
+          <button id="testBackend" class="secondary">Test</button>
+        </div>
+        <div id="backendStatus" class="status" style="margin-top:10px;">No backend configured.</div>
+      </div>
+
+      <div class="section">
+        <h3>Knowledge base</h3>
+        <div class="small" style="margin:8px 0 12px;">
+          Store text here for local recall in the browser, or send it to Google Sheets through Apps Script.
+        </div>
+        <label for="kbText">Add text</label>
+        <textarea id="kbText" placeholder="Paste notes, docs, or instructions..."></textarea>
+        <div class="row two" style="margin-top:10px;">
+          <button id="addKb">Add locally</button>
+          <button id="clearKb" class="danger">Clear</button>
+        </div>
+        <div class="divider"></div>
+        <div class="file-list" id="kbList"></div>
+      </div>
+
+      <div class="section">
+        <h3>Capabilities</h3>
+        <div class="tagbar" style="margin-top:10px;">
+          <span class="tag">chat</span>
+          <span class="tag">writing</span>
+          <span class="tag">code</span>
+          <span class="tag">scripts</span>
+          <span class="tag">images</span>
+          <span class="tag">video</span>
+          <span class="tag">Sheets</span>
+        </div>
+        <div class="small" style="margin-top:10px;">
+          Images and video need an external generator endpoint. This page provides the router and UI layer.
+        </div>
+      </div>
+    </aside>
+
+    <main class="card main">
+      <div class="section">
+        <h2>Conversation</h2>
+        <div class="small" style="margin-top:6px;">
+          Syl auto-tags prompts and routes them to text, code, image, video, or script paths.
+        </div>
+      </div>
+
+      <div class="chat">
+        <div class="messages" id="messages"></div>
+        <div class="composer section">
+          <div class="row three">
+            <select id="mode">
+              <option value="auto">Auto route</option>
+              <option value="text">Text</option>
+              <option value="code">Code</option>
+              <option value="script">Script</option>
+              <option value="image">Image</option>
+              <option value="video">Video</option>
+            </select>
+            <input id="title" placeholder="Optional title / label" />
+            <button id="send">Send</button>
+          </div>
+          <textarea id="prompt" placeholder="Ask Syl to write, edit, plan, code, or generate..."></textarea>
+          <div class="small">Tip: paste a code block into the prompt for code or script execution through your backend.</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      backendUrl: localStorage.getItem('syl_backend_url') || '',
+      kb: JSON.parse(localStorage.getItem('syl_local_kb') || '[]'),
+      messages: [
+        { role: 'assistant', text: 'Syl is ready. Connect an Apps Script backend for persistence, Sheets storage, or AI API calls.' }
+      ]
+    };
+
+    const els = {
+      backendUrl: document.getElementById('backendUrl'),
+      backendStatus: document.getElementById('backendStatus'),
+      saveBackend: document.getElementById('saveBackend'),
+      testBackend: document.getElementById('testBackend'),
+      kbText: document.getElementById('kbText'),
+      addKb: document.getElementById('addKb'),
+      clearKb: document.getElementById('clearKb'),
+      kbList: document.getElementById('kbList'),
+      messages: document.getElementById('messages'),
+      mode: document.getElementById('mode'),
+      title: document.getElementById('title'),
+      prompt: document.getElementById('prompt'),
+      send: document.getElementById('send')
+    };
+
+    els.backendUrl.value = state.backendUrl;
+
+    function saveKb() {
+      localStorage.setItem('syl_local_kb', JSON.stringify(state.kb));
+      renderKb();
+    }
+
+    function routePrompt(prompt, mode) {
+      const lower = prompt.toLowerCase();
+      if (mode && mode !== 'auto') return mode;
+      if (/(image|logo|poster|banner|draw|illustration|thumbnail)/.test(lower)) return 'image';
+      if (/(video|clip|animation|scene|movie)/.test(lower)) return 'video';
+      if (/(python|javascript|typescript|sql|bash|powershell|code|script|react)/.test(lower)) return 'code';
+      if (/(automation|workflow|shell|cli|task)/.test(lower)) return 'script';
+      return 'text';
+    }
+
+    function localRetrieve(prompt) {
+      const q = prompt.toLowerCase().split(/\W+/).filter(Boolean);
+      return state.kb
+        .map(item => {
+          const text = (item.text || '').toLowerCase();
+          const score = q.reduce((n, w) => n + (text.includes(w) ? 1 : 0), 0);
+          return { ...item, score };
+        })
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5);
+    }
+
+    function addMessage(role, text, meta='') {
+      state.messages.push({ role, text, meta });
+      renderMessages();
+    }
+
+    function renderMessages() {
+      els.messages.innerHTML = '';
+      for (const m of state.messages) {
+        const wrap = document.createElement('div');
+        wrap.className = `msg ${m.role}`;
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.textContent = m.text;
+        if (m.meta) {
+          const meta = document.createElement('div');
+          meta.className = 'meta';
+          meta.textContent = m.meta;
+          bubble.appendChild(meta);
+        }
+        wrap.appendChild(bubble);
+        els.messages.appendChild(wrap);
+      }
+      els.messages.scrollTop = els.messages.scrollHeight;
+    }
+
+    function renderKb() {
+      els.kbList.innerHTML = '';
+      if (!state.kb.length) {
+        els.kbList.innerHTML = '<div class="file-item">No local knowledge saved yet.</div>';
+        return;
+      }
+      state.kb.slice().reverse().forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'file-item';
+        div.textContent = `${idx + 1}. ${item.title || 'Entry'} — ${item.text.slice(0, 110)}${item.text.length > 110 ? '…' : ''}`;
+        els.kbList.appendChild(div);
+      });
+    }
+
+    async function testBackend() {
+      const url = els.backendUrl.value.trim();
+      if (!url) {
+        els.backendStatus.textContent = 'No backend URL provided.';
+        return;
+      }
+      els.backendStatus.textContent = 'Testing backend…';
+      try {
+        const res = await fetch(url, { method: 'GET' });
+        const txt = await res.text();
+        els.backendStatus.textContent = `Backend reachable: ${res.status}. Response preview: ${txt.slice(0, 120)}`;
+      } catch (err) {
+        els.backendStatus.textContent = `Backend test failed: ${err.message}`;
+      }
+    }
+
+    async function sendPrompt() {
+      const prompt = els.prompt.value.trim();
+      const mode = els.mode.value;
+      const title = els.title.value.trim();
+      if (!prompt) return;
+
+      addMessage('user', prompt, title ? `Label: ${title}` : '');
+      els.prompt.value = '';
+
+      const route = routePrompt(prompt, mode);
+      const localMatches = localRetrieve(prompt);
+      const kbNote = localMatches.length
+        ? `\n\nRelevant local KB:\n${localMatches.map(x => `- ${x.title || 'entry'}: ${x.text.slice(0, 120)}`).join('\n')}`
+        : '';
+
+      if (!state.backendUrl) {
+        addMessage('assistant', `No backend configured. Routed to: ${route}.\n\nTo make Syl fully functional on GitHub Pages, connect an Apps Script web app or another API endpoint.\n${kbNote}`, `Router: ${route}`);
+        return;
+      }
+
+      try {
+        const payload = { prompt, mode: route, title, kb: state.kb, localMatches };
+        const res = await fetch(state.backendUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(() => ({ raw: 'Non-JSON response' }));
+        const reply = data.reply || data.text || JSON.stringify(data, null, 2);
+        addMessage('assistant', reply, `Router: ${route}`);
+      } catch (err) {
+        addMessage('assistant', `Backend error: ${err.message}\n\nRouted locally as ${route}.${kbNote}`, `Router: ${route}`);
+      }
+    }
+
+    els.saveBackend.addEventListener('click', () => {
+      state.backendUrl = els.backendUrl.value.trim();
+      localStorage.setItem('syl_backend_url', state.backendUrl);
+      els.backendStatus.textContent = state.backendUrl ? 'Backend saved.' : 'Backend cleared.';
+    });
+    els.testBackend.addEventListener('click', testBackend);
+    els.addKb.addEventListener('click', () => {
+      const text = els.kbText.value.trim();
+      if (!text) return;
+      state.kb.push({
+        title: els.title.value.trim() || `Entry ${state.kb.length + 1}`,
+        text,
+        createdAt: new Date().toISOString()
+      });
+      els.kbText.value = '';
+      saveKb();
+    });
+    els.clearKb.addEventListener('click', () => {
+      state.kb = [];
+      saveKb();
+    });
+    els.send.addEventListener('click', sendPrompt);
+    els.prompt.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) sendPrompt();
+    });
+
+    renderKb
