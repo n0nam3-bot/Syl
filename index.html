@@ -3,29 +3,29 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Market Pulse</title>
+<title>Market Pulse — Daily Picks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg0:#06101d; --bg1:#0a1423; --card:rgba(16,24,39,.78); --line:rgba(148,163,184,.14);
-  --text:#edf4ff; --muted:#8fa3bf; --good:#31d27d; --bad:#ff6b7a; --warn:#ffb84d;
-  --accent:#7c8cff; --accent2:#4ed2ff; --shadow:0 20px 60px rgba(0,0,0,.34); --r:24px;
+  --bg0:#06101d;--bg1:#0a1423;--line:rgba(148,163,184,.14);
+  --text:#edf4ff;--muted:#8fa3bf;--good:#31d27d;--bad:#ff6b7a;--warn:#ffb84d;
+  --accent:#7c8cff;--accent2:#4ed2ff;--shadow:0 20px 60px rgba(0,0,0,.34);--r:24px;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);
+  margin:0;font-family:Inter,system-ui,sans-serif;color:var(--text);
   background:
-    radial-gradient(circle at 10% 0%, rgba(124,140,255,.25), transparent 28%),
-    radial-gradient(circle at 90% 8%, rgba(78,210,255,.18), transparent 22%),
-    radial-gradient(circle at 50% 100%, rgba(49,210,125,.12), transparent 24%),
-    linear-gradient(180deg,var(--bg0) 0%, var(--bg1) 38%, #060c17 100%);
+    radial-gradient(circle at 10% 0%,rgba(124,140,255,.25),transparent 28%),
+    radial-gradient(circle at 90% 8%,rgba(78,210,255,.18),transparent 22%),
+    radial-gradient(circle at 50% 100%,rgba(49,210,125,.12),transparent 24%),
+    linear-gradient(180deg,var(--bg0) 0%,var(--bg1) 38%,#060c17 100%);
 }
 body:before{
-  content:"";position:fixed;inset:0;pointer-events:none;opacity:.30;
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.28;
   background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
   background-size:32px 32px;mask-image:radial-gradient(circle at center,#000,transparent 92%);
 }
@@ -34,180 +34,210 @@ body:before{
   background:linear-gradient(180deg,rgba(18,28,47,.88),rgba(10,16,28,.8));
   border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);backdrop-filter:blur(14px);
 }
+/* HERO */
 .hero{display:grid;grid-template-columns:1.45fr .95fr;gap:16px;margin-bottom:16px}
 .hero-main,.hero-side,.section{padding:18px}
 .brand{display:flex;gap:14px;align-items:center;margin-bottom:14px}
-.mark{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;font-weight:800;color:#06101d;background:linear-gradient(135deg,var(--accent),var(--accent2))}
-.brand h1{margin:0;font-size:28px;letter-spacing:-.04em}
-.brand p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.mark{width:46px;height:46px;border-radius:16px;display:grid;place-items:center;font-size:20px;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.brand h1{margin:0;font-size:26px;letter-spacing:-.04em}
+.brand p{margin:5px 0 0;color:var(--muted);font-size:13px}
 .topline{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
-.badge{display:flex;gap:8px;align-items:center;padding:9px 12px;border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:999px}
+.badge{display:flex;gap:8px;align-items:center;padding:9px 12px;border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:999px;cursor:default}
 .dot{width:9px;height:9px;border-radius:99px;background:var(--good);box-shadow:0 0 0 6px rgba(49,210,125,.12)}
-.badge small{display:block;color:var(--muted);font-weight:600}
-.badge strong{display:block}
-.actions{display:flex;gap:10px;flex-wrap:wrap}
+.badge small{display:block;color:var(--muted);font-weight:600;font-size:11px}
+.badge strong{display:block;font-size:13px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
 .btn,.chip{font:inherit}
-.btn{
-  border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);
-  padding:11px 15px;border-radius:14px;cursor:pointer;transition:.15s;
-}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--text);padding:10px 14px;border-radius:13px;cursor:pointer;transition:.15s;font-size:13px}
 .btn:hover{transform:translateY(-1px);border-color:rgba(124,140,255,.42);background:rgba(124,140,255,.14)}
 .btn.primary{border:0;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06101d;font-weight:800}
-.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:16px}
-.kpi{padding:14px 15px;border:1px solid var(--line);background:rgba(255,255,255,.035);border-radius:18px}
+.kpi{padding:14px 15px;border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:18px}
 .kpi .label{font-size:11px;font-weight:800;color:#6f84a1;letter-spacing:.14em;text-transform:uppercase}
-.kpi .value{margin-top:8px;font-size:21px;font-weight:800;letter-spacing:-.03em}
-.kpi .sub{margin-top:4px;color:var(--muted);font-size:13px}
-.side-grid{display:grid;gap:12px}
-.side-card{padding:15px;border:1px solid var(--line);background:rgba(255,255,255,.035);border-radius:18px}
-.side-card h3{margin:0 0 8px;font-size:14px}
-.side-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
-.strip,.range-row{display:flex;gap:10px;overflow:auto;scrollbar-width:thin}
+.kpi .value{margin-top:7px;font-size:21px;font-weight:800;letter-spacing:-.03em}
+.kpi .sub{margin-top:3px;color:var(--muted);font-size:12px}
+.side-grid{display:grid;gap:11px}
+.side-card{padding:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:16px}
+.side-card h3{margin:0 0 6px;font-size:13px}
+.side-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+/* STRIP */
+.strip,.range-row{display:flex;gap:9px;overflow:auto;scrollbar-width:thin}
 .strip{padding:2px 0 6px}
-.pill,.chip{
-  border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);
-  border-radius:999px;padding:10px 12px;cursor:pointer;white-space:nowrap;transition:.15s;
-}
+.pill,.chip{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);border-radius:999px;padding:9px 12px;cursor:pointer;white-space:nowrap;transition:.15s}
 .pill.active,.pill:hover,.chip.active,.chip:hover{background:rgba(124,140,255,.14);border-color:rgba(124,140,255,.35)}
-.pill{display:flex;gap:8px;align-items:center}
-.pill .sym{font-weight:800}
+.pill{display:flex;gap:7px;align-items:center}
+.pill .sym{font-weight:800;font-size:13px}
 .pill .chg{font-size:12px}
-.good{color:var(--good)} .bad{color:var(--bad)} .warn{color:var(--warn)}
+.good{color:var(--good)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+/* MAIN */
 main{display:grid;grid-template-columns:1fr 1.45fr;gap:16px}
-.section-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:12px}
-.section-head h2{margin:0;font-size:18px;letter-spacing:-.03em}
-.hint{color:var(--muted);font-size:13px;line-height:1.45;margin-top:4px}
-.pick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.pick{padding:15px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.035);cursor:pointer;transition:.15s;overflow:hidden}
-.pick:hover,.pick.active{transform:translateY(-1px);border-color:rgba(124,140,255,.4);background:rgba(124,140,255,.08)}
+.section-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:14px}
+.section-head h2{margin:0;font-size:17px;letter-spacing:-.03em}
+.hint{color:var(--muted);font-size:13px;line-height:1.45;margin-top:3px}
+/* TABS */
+.tab-bar{display:flex;gap:6px;margin-bottom:14px}
+.tab{padding:7px 14px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);cursor:pointer;font-size:12px;font-weight:700;letter-spacing:.04em;transition:.15s}
+.tab.active{background:rgba(124,140,255,.16);border-color:rgba(124,140,255,.4);color:var(--text)}
+.tab.amber.active{background:rgba(255,184,77,.14);border-color:rgba(255,184,77,.4);color:var(--warn)}
+/* PICK CARDS */
+.pick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.pick{padding:14px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.03);cursor:pointer;transition:.15s;overflow:hidden}
+.pick:hover,.pick.active{transform:translateY(-1px);border-color:rgba(124,140,255,.4);background:rgba(124,140,255,.07)}
+.pick.amber:hover,.pick.amber.active{border-color:rgba(255,184,77,.4);background:rgba(255,184,77,.07)}
 .pick-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.rank{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#6f84a1;font-weight:800}
-.sym{font-size:24px;font-weight:800;letter-spacing:-.04em}
-.name{margin-top:4px;color:var(--muted);font-size:13px;line-height:1.35}
-.mini{width:110px;height:44px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
-.meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.tag{padding:7px 9px;border-radius:999px;background:rgba(255,255,255,.045);border:1px solid var(--line);color:var(--muted);font-size:12px;font-weight:700}
+.rank{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6f84a1;font-weight:800}
+.sym{font-size:22px;font-weight:800;letter-spacing:-.04em}
+.name{margin-top:3px;color:var(--muted);font-size:12px}
+.mini{width:110px;height:44px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.03);flex-shrink:0}
+.meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.tag{padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);font-size:11px;font-weight:700}
 .tag.good{color:#a8ffd0;border-color:rgba(49,210,125,.3);background:rgba(49,210,125,.08)}
 .tag.bad{color:#ffb3bd;border-color:rgba(255,107,122,.3);background:rgba(255,107,122,.08)}
-.reason{margin-top:10px;font-size:13px;line-height:1.5}
-.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
-.metric{padding:10px 11px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03)}
-.metric .label{font-size:11px;font-weight:800;color:#6f84a1;letter-spacing:.14em;text-transform:uppercase}
-.metric .val{margin-top:6px;font-size:15px;font-weight:800}
-.metric .sub{margin-top:3px;color:var(--muted);font-size:12px}
-.chart-shell{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:linear-gradient(180deg,rgba(10,18,31,.98),rgba(9,14,24,.9));min-height:380px}
+.tag.amber{color:#ffe0a0;border-color:rgba(255,184,77,.3);background:rgba(255,184,77,.08)}
+.tag.blue{color:#b3e0ff;border-color:rgba(78,210,255,.3);background:rgba(78,210,255,.08)}
+/* TRADE LEVELS */
+.trade-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:10px}
+.tl{padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02)}
+.tl-label{font-size:10px;font-weight:800;color:#6f84a1;letter-spacing:.1em;text-transform:uppercase}
+.tl-val{margin-top:5px;font-size:14px;font-weight:800}
+.tl-sub{margin-top:1px;font-size:10px;color:var(--muted)}
+.tl.entry .tl-val{color:var(--accent2)}
+.tl.target .tl-val{color:var(--good)}
+.tl.stop .tl-val{color:var(--bad)}
+.rr-row{display:flex;align-items:center;gap:8px;margin-top:8px;padding:7px 10px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.02);font-size:12px}
+.rr-badge{padding:3px 10px;border-radius:999px;font-weight:800;font-size:11px}
+.rr-green{background:rgba(49,210,125,.12);color:var(--good);border:1px solid rgba(49,210,125,.25)}
+.rr-amber{background:rgba(255,184,77,.12);color:var(--warn);border:1px solid rgba(255,184,77,.25)}
+.reason{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.5}
+/* CHART */
+.chart-shell{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:linear-gradient(180deg,rgba(10,18,31,.98),rgba(9,14,24,.9));min-height:370px}
 .chart-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:18px 18px 0}
-.chart-title{display:flex;flex-direction:column;gap:6px}
-.chart-title strong{font-size:24px;letter-spacing:-.04em}
+.chart-title{display:flex;flex-direction:column;gap:5px}
+.chart-title strong{font-size:22px;letter-spacing:-.04em}
 .chart-title span{color:var(--muted);font-size:13px}
 .price{text-align:right}
-.price strong{font-size:28px;letter-spacing:-.05em}
+.price strong{font-size:26px;letter-spacing:-.05em}
 .price .change{margin-top:5px;font-size:13px;font-weight:700}
-.chart-box{height:320px;padding:8px 8px 14px}
-.chart-note{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:0 18px 18px;color:var(--muted);font-size:12px}
-.subgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
-.list{display:grid;gap:10px}
-.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 13px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.035)}
-.row .left{display:flex;flex-direction:column;gap:4px}
-.row .left strong{font-size:14px}
+.chart-box{height:310px;padding:8px 8px 12px}
+.chart-note{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:0 18px 16px;color:var(--muted);font-size:12px}
+.subgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.list{display:grid;gap:8px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 13px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.03)}
+.row .left{display:flex;flex-direction:column;gap:3px}
+.row .left strong{font-size:13px}
 .row .left span{font-size:12px;color:var(--muted)}
-.row .right{text-align:right}
-.row .right strong{display:block;font-size:15px}
+.row .right{text-align:right;flex-shrink:0}
+.row .right strong{display:block;font-size:13px}
 .row .right span{display:block;font-size:12px;color:var(--muted)}
-.loading,.error{display:grid;place-items:center;min-height:220px;text-align:center;color:var(--muted)}
-.spinner{width:28px;height:28px;border-radius:50%;border:3px solid rgba(255,255,255,.16);border-top-color:var(--accent2);animation:spin 1s linear infinite;margin-bottom:10px}
+/* SYNC BAR */
+.sync-bar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:9px 13px;margin-top:11px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.02);font-size:12px;color:var(--muted)}
+.status{padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700}
+.sync-ok{background:rgba(49,210,125,.12);color:var(--good);border:1px solid rgba(49,210,125,.2)}
+.sync-pending{background:rgba(255,184,77,.12);color:var(--warn);border:1px solid rgba(255,184,77,.2)}
+.sync-none{background:rgba(255,255,255,.05);color:#6f84a1;border:1px solid var(--line)}
+/* STATES */
+.loading,.error{display:grid;place-items:center;min-height:200px;text-align:center;color:var(--muted)}
+.spinner{width:26px;height:26px;border-radius:50%;border:3px solid rgba(255,255,255,.15);border-top-color:var(--accent2);animation:spin 1s linear infinite;margin-bottom:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .skeleton{position:relative;overflow:hidden}
-.skeleton:after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);animation:shine 1.2s infinite}
+.skeleton:after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);animation:shine 1.2s infinite}
 @keyframes shine{to{transform:translateX(100%)}}
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
+/* MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
 .modal-backdrop.open{display:flex}
-.modal{width:min(620px,100%);padding:18px;border-radius:24px;background:linear-gradient(180deg,rgba(16,24,39,.98),rgba(9,14,24,.98));border:1px solid var(--line);box-shadow:var(--shadow)}
-.modal h3{margin:0 0 8px;font-size:20px}
-.modal p{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.5}
-.field{display:grid;gap:8px;margin-top:12px}
+.modal{width:min(580px,100%);padding:22px;border-radius:22px;background:linear-gradient(180deg,rgba(16,24,39,.98),rgba(9,14,24,.98));border:1px solid var(--line);box-shadow:var(--shadow)}
+.modal h3{margin:0 0 7px;font-size:19px}
+.modal p{margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.5}
+.field{display:grid;gap:7px;margin-top:11px}
 .field label{font-size:11px;font-weight:800;color:#6f84a1;letter-spacing:.14em;text-transform:uppercase}
-.field input,.field textarea{width:100%;padding:13px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font:inherit;outline:none}
-.field textarea{min-height:90px;resize:vertical}
-.field input:focus,.field textarea:focus{border-color:rgba(78,210,255,.4);box-shadow:0 0 0 4px rgba(78,210,255,.08)}
-.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;flex-wrap:wrap}
-@media (max-width:1120px){.hero,main{grid-template-columns:1fr}.kpis,.pick-grid,.subgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:760px){.wrap{padding:12px}.hero-main,.hero-side,.section{padding:16px}.kpis,.pick-grid,.subgrid{grid-template-columns:1fr}.chart-box{height:280px}.chart-shell{min-height:340px}.chart-head{flex-direction:column}.price{text-align:left}.actions{justify-content:flex-start}.brand h1{font-size:23px}}
+.field input,.field textarea{width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);font:inherit;outline:none;font-size:13px}
+.field textarea{min-height:76px;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:rgba(78,210,255,.4);box-shadow:0 0 0 3px rgba(78,210,255,.07)}
+.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:16px;flex-wrap:wrap}
+/* RESPONSIVE */
+@media(max-width:1120px){.hero,main{grid-template-columns:1fr}.kpis,.pick-grid,.subgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.wrap{padding:12px}.kpis,.pick-grid,.subgrid{grid-template-columns:1fr}.chart-box{height:260px}.chart-shell{min-height:320px}.chart-head{flex-direction:column}.price{text-align:left}.brand h1{font-size:21px}.trade-levels{grid-template-columns:repeat(3,1fr)}}
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <!-- HERO -->
   <section class="panel hero">
     <div class="hero-main">
       <div class="brand">
-        <div class="mark">M</div>
+        <div class="mark">📈</div>
         <div>
           <h1>Market Pulse</h1>
-          <p>Fast stock dashboard with instant quotes, clean charts, and one-click switching.</p>
+          <p>Live daily picks · entry · exit · stop levels · auto-logs to Google Sheets</p>
         </div>
       </div>
       <div class="topline">
         <div class="badge">
           <span class="dot" id="statusDot"></span>
-          <div><small>Live status</small><strong id="liveStatus">Loading quotes…</strong></div>
+          <div><small>Status</small><strong id="liveStatus">Loading…</strong></div>
         </div>
         <div class="badge">
           <div><small>Last refresh</small><strong id="lastRefresh">—</strong></div>
         </div>
+        <div class="badge" id="syncBadge" style="cursor:pointer" title="Click to sync now" onclick="forceSyncToSheets()">
+          <div><small>Sheets</small><strong id="syncLabel">—</strong></div>
+        </div>
         <div class="actions">
-          <button class="btn" id="settingsBtn">Settings</button>
-          <button class="btn primary" id="refreshBtn">Refresh now</button>
+          <button class="btn" id="settingsBtn">⚙ Settings</button>
+          <button class="btn primary" id="refreshBtn">↻ Refresh</button>
         </div>
       </div>
-
       <div class="kpis">
-        <div class="kpi"><div class="label">Top pick</div><div class="value" id="kpiTopPick">—</div><div class="sub" id="kpiTopPickSub">Waiting for data</div></div>
-        <div class="kpi"><div class="label">Best momentum</div><div class="value" id="kpiMomentum">—</div><div class="sub" id="kpiMomentumSub">Daily change</div></div>
-        <div class="kpi"><div class="label">Market breadth</div><div class="value" id="kpiBreadth">—</div><div class="sub" id="kpiBreadthSub">Advancers vs laggards</div></div>
-        <div class="kpi"><div class="label">Universe</div><div class="value" id="kpiUniverse">0</div><div class="sub">Symbols loaded instantly</div></div>
+        <div class="kpi"><div class="label">Top pick</div><div class="value" id="kpiTopPick">—</div><div class="sub" id="kpiTopPickSub">Waiting…</div></div>
+        <div class="kpi"><div class="label">Best mover</div><div class="value" id="kpiMomentum">—</div><div class="sub" id="kpiMomentumSub">Daily change</div></div>
+        <div class="kpi"><div class="label">Market breadth</div><div class="value" id="kpiBreadth">—</div><div class="sub" id="kpiBreadthSub">Advancers / decliners</div></div>
+        <div class="kpi"><div class="label">Symbols</div><div class="value" id="kpiUniverse">0</div><div class="sub">in universe</div></div>
       </div>
     </div>
-
     <aside class="hero-side">
       <div class="side-grid">
-        <div class="side-card"><h3>Fast loading</h3><p>The page pulls current quotes in one batch, so the stock cards appear quickly instead of scanning ticker-by-ticker.</p></div>
-        <div class="side-card"><h3>Interactive charts</h3><p>Click any stock, then switch between 1H, 1D, 1W, 1M, 1Y, 3Y, 5Y, and MAX views.</p></div>
-        <div class="side-card"><h3>No paid API key</h3><p>This uses public Yahoo Finance endpoints in the browser. Optional Google Sheets logging is still available.</p></div>
+        <div class="side-card"><h3>🎯 Top 3 Picks</h3><p>Highest momentum + score. Entry, target, and stop calculated from live data. Conservative 2–4× R:R.</p></div>
+        <div class="side-card"><h3>🔥 High Reward</h3><p>Aggressive setups filtered by relative volume spikes. 5×+ R:R with wider targets.</p></div>
+        <div class="side-card"><h3>📊 Auto-logged</h3><p>Every refresh syncs picks to your Google Sheets — Top Picks + High Reward + full Logs tab.</p></div>
       </div>
     </aside>
   </section>
 
+  <!-- TICKER STRIP -->
   <section class="panel section" style="margin-bottom:16px">
-    <div class="section-head" style="margin-bottom:10px">
-      <div>
-        <h2>Top stocks this hour</h2>
-        <div class="hint">These are ranked from the live quote batch. Click one to open its chart immediately.</div>
-      </div>
+    <div class="section-head" style="margin-bottom:8px">
+      <div><h2>Top movers</h2><div class="hint">Ranked by momentum score · click to open chart</div></div>
     </div>
     <div class="strip" id="tickerStrip"></div>
   </section>
 
+  <!-- MAIN -->
   <main>
+    <!-- PICKS -->
     <section class="panel section">
-      <div class="section-head">
-        <div>
-          <h2>Top pick list</h2>
-          <div class="hint">Sorted from strongest quote-based momentum to weakest. No long scan required.</div>
-        </div>
+      <div class="tab-bar">
+        <button class="tab active" id="tabTop3" onclick="showTab('top3')">🎯 Top 3 Picks</button>
+        <button class="tab amber" id="tabHR" onclick="showTab('highreward')">🔥 High Reward (5:1+)</button>
       </div>
       <div id="pickList" class="pick-grid">
-        <div class="loading skeleton" style="min-height:420px;border-radius:20px">Loading stocks…</div>
+        <div class="loading skeleton" style="min-height:380px;border-radius:18px;grid-column:1/-1">
+          <div><div class="spinner"></div><div>Loading live quotes…</div></div>
+        </div>
       </div>
-      <div class="hint" style="margin-top:12px" id="scanNote">Loading instantly…</div>
+      <div class="hint" style="margin-top:9px" id="scanNote">Fetching data…</div>
+      <div class="sync-bar">
+        <span class="status sync-none" id="syncBarStatus">Not synced</span>
+        <span id="syncBarText">Auto-syncs to Google Sheets on every refresh.</span>
+        <button class="btn" style="margin-left:auto;padding:5px 11px;font-size:11px" onclick="forceSyncToSheets()">Sync now</button>
+      </div>
     </section>
 
+    <!-- CHART -->
     <section class="panel section">
       <div class="section-head">
-        <div>
-          <h2>Selected stock chart</h2>
-          <div class="hint" id="chartHint">Choose a ticker to load the chart.</div>
-        </div>
+        <div><h2>Chart</h2><div class="hint" id="chartHint">Click a stock to load its chart.</div></div>
         <div class="range-row" id="rangeRow">
           <button class="chip" data-range="1H">1H</button>
           <button class="chip active" data-range="1D">1D</button>
@@ -219,590 +249,575 @@ main{display:grid;grid-template-columns:1fr 1.45fr;gap:16px}
           <button class="chip" data-range="MAX">MAX</button>
         </div>
       </div>
-
       <div class="chart-shell">
         <div class="chart-head">
-          <div class="chart-title">
-            <strong id="chartSymbol">SPY</strong>
-            <span id="chartName">S&P 500 ETF</span>
-          </div>
-          <div class="price">
-            <strong id="chartPrice">—</strong>
-            <div class="change" id="chartChange">Loading…</div>
-          </div>
+          <div class="chart-title"><strong id="chartSymbol">SPY</strong><span id="chartName">S&amp;P 500 ETF</span></div>
+          <div class="price"><strong id="chartPrice">—</strong><div class="change" id="chartChange">Loading…</div></div>
         </div>
         <div class="chart-box"><canvas id="mainChart"></canvas></div>
-        <div class="chart-note">
-          <span id="chartPeriod">1D view</span>
-          <span id="chartRangeDetail">Default range: 1 day</span>
-        </div>
+        <div class="chart-note"><span id="chartPeriod">1D view</span><span id="chartRangeDetail">5-day / 15m bars</span></div>
       </div>
-
       <div class="subgrid">
-        <div class="panel" style="padding:14px;border-radius:20px">
-          <div class="section-head" style="margin-bottom:10px">
-            <div>
-              <h2 style="font-size:16px">Market snapshot</h2>
-              <div class="hint">Major index context for the current names.</div>
-            </div>
-          </div>
-          <div class="list" id="marketRows">
-            <div class="loading skeleton" style="min-height:170px;border-radius:18px">Loading market snapshot…</div>
-          </div>
+        <div class="panel" style="padding:13px;border-radius:18px">
+          <div class="section-head" style="margin-bottom:8px"><div><h2 style="font-size:14px">Market snapshot</h2></div></div>
+          <div class="list" id="marketRows"><div class="loading skeleton" style="min-height:130px;border-radius:14px"></div></div>
         </div>
-
-        <div class="panel" style="padding:14px;border-radius:20px">
-          <div class="section-head" style="margin-bottom:10px">
-            <div>
-              <h2 style="font-size:16px">Ranking logic</h2>
-              <div class="hint">Why the top stock sits at the top.</div>
-            </div>
-          </div>
-          <div class="list" id="logicBox">
-            <div class="loading skeleton" style="min-height:170px;border-radius:18px">Loading ranking logic…</div>
-          </div>
+        <div class="panel" style="padding:13px;border-radius:18px">
+          <div class="section-head" style="margin-bottom:8px"><div><h2 style="font-size:14px">Ranking logic</h2></div></div>
+          <div class="list" id="logicBox"><div class="loading skeleton" style="min-height:130px;border-radius:14px"></div></div>
         </div>
       </div>
     </section>
   </main>
 </div>
 
+<!-- SETTINGS MODAL -->
 <div class="modal-backdrop" id="settingsModal">
   <div class="modal">
-    <h3>Settings</h3>
-    <p>Optional. Keep the stock list small and focused for best speed. Paste a Google Apps Script URL only if you want hourly logging to Sheets.</p>
+    <h3>⚙ Settings</h3>
+    <p>Your Google Sheets URL is pre-wired. Change only if you re-deploy the Apps Script. Customize your watchlist below.</p>
     <div class="field">
-      <label for="sheetsUrl">Google Apps Script Web App URL</label>
-      <input id="sheetsUrl" type="text" placeholder="https://script.google.com/macros/s/AKfycbzh-Bk4vW_RD6hCoQ4C6LxRdkvmJ7947a8gmH3OfDqExC9SwzcSjmF3ulDiwV7vkT52/exec" />
+      <label>Google Apps Script URL</label>
+      <input id="sheetsUrl" type="text" placeholder="https://script.google.com/macros/s/…/exec" />
     </div>
     <div class="field">
-      <label for="watchlistInput">Ticker universe</label>
-      <textarea id="watchlistInput" placeholder="AAPL, MSFT, NVDA, AMZN, META"></textarea>
+      <label>Watchlist tickers</label>
+      <textarea id="watchlistInput" placeholder="AAPL, MSFT, NVDA, AMZN …"></textarea>
     </div>
     <div class="modal-actions">
       <button class="btn" id="closeSettings">Cancel</button>
-      <button class="btn primary" id="saveSettings">Save</button>
+      <button class="btn primary" id="saveSettings">Save &amp; Refresh</button>
     </div>
   </div>
 </div>
 
 <script>
-(() => {
-  const DEFAULT_UNIVERSE = [
-    { ticker:'NVDA', name:'NVIDIA', sector:'Semiconductors' },
-    { ticker:'MSFT', name:'Microsoft', sector:'Software' },
-    { ticker:'AAPL', name:'Apple', sector:'Consumer Tech' },
-    { ticker:'AMZN', name:'Amazon', sector:'E-commerce' },
-    { ticker:'META', name:'Meta Platforms', sector:'Social / Ads' },
-    { ticker:'GOOGL', name:'Alphabet', sector:'Internet' },
-    { ticker:'TSLA', name:'Tesla', sector:'EV / Auto' },
-    { ticker:'AMD', name:'AMD', sector:'Semiconductors' },
-    { ticker:'AVGO', name:'Broadcom', sector:'Semiconductors' },
-    { ticker:'NFLX', name:'Netflix', sector:'Streaming' },
-    { ticker:'JPM', name:'JPMorgan Chase', sector:'Banks' },
-    { ticker:'COST', name:'Costco', sector:'Retail' },
-    { ticker:'PLTR', name:'Palantir', sector:'Software' },
-    { ticker:'COIN', name:'Coinbase', sector:'Crypto / Fintech' }
-  ];
+(()=>{
+'use strict';
 
-  const MARKET = [
-    { ticker:'SPY', name:'S&P 500 ETF' },
-    { ticker:'QQQ', name:'NASDAQ 100 ETF' },
-    { ticker:'IWM', name:'Russell 2000 ETF' }
-  ];
+// ── PRE-WIRED SHEETS URL ────────────────────────────────────────────────────
+const DEFAULT_SHEETS_URL='https://script.google.com/macros/s/AKfycbzh-Bk4vW_RD6hCoQ4C6LxRdkvmJ7947a8gmH3OfDqExC9SwzcSjmF3ulDiwV7vkT52/exec';
 
-  const TIMEFRAMES = {
-    '1H': { range:'1d', interval:'5m', label:'1 hour', detail:'1 day / 5m bars' },
-    '1D': { range:'5d', interval:'15m', label:'1 day', detail:'5 days / 15m bars' },
-    '1W': { range:'1mo', interval:'1h', label:'1 week', detail:'1 month / 1h bars' },
-    '1M': { range:'1mo', interval:'1d', label:'1 month', detail:'1 month / 1d bars' },
-    '1Y': { range:'1y', interval:'1d', label:'1 year', detail:'1 year / 1d bars' },
-    '3Y': { range:'3y', interval:'1wk', label:'3 years', detail:'3 years / 1wk bars' },
-    '5Y': { range:'5y', interval:'1wk', label:'5 years', detail:'5 years / 1wk bars' },
-    'MAX': { range:'max', interval:'1mo', label:'max', detail:'max / 1mo bars' }
-  };
+// ── UNIVERSE ────────────────────────────────────────────────────────────────
+const DEFAULT_UNIVERSE=[
+  {ticker:'NVDA', name:'NVIDIA',         sector:'Semiconductors'},
+  {ticker:'MSFT', name:'Microsoft',       sector:'Software'},
+  {ticker:'AAPL', name:'Apple',           sector:'Consumer Tech'},
+  {ticker:'AMZN', name:'Amazon',          sector:'E-commerce'},
+  {ticker:'META', name:'Meta Platforms',  sector:'Social / Ads'},
+  {ticker:'GOOGL',name:'Alphabet',        sector:'Internet'},
+  {ticker:'TSLA', name:'Tesla',           sector:'EV / Auto'},
+  {ticker:'AMD',  name:'AMD',             sector:'Semiconductors'},
+  {ticker:'AVGO', name:'Broadcom',        sector:'Semiconductors'},
+  {ticker:'NFLX', name:'Netflix',         sector:'Streaming'},
+  {ticker:'JPM',  name:'JPMorgan Chase',  sector:'Banks'},
+  {ticker:'COST', name:'Costco',          sector:'Retail'},
+  {ticker:'PLTR', name:'Palantir',        sector:'Software / AI'},
+  {ticker:'COIN', name:'Coinbase',        sector:'Crypto / Fintech'},
+  {ticker:'SMCI', name:'Super Micro',     sector:'Servers / AI'},
+  {ticker:'ARM',  name:'Arm Holdings',    sector:'Semiconductors'},
+  {ticker:'CRWD', name:'CrowdStrike',     sector:'Cybersecurity'},
+  {ticker:'MSTR', name:'MicroStrategy',   sector:'Bitcoin / Software'}
+];
 
-  const STORE = {
-    universe: 'mp_universe_v2',
-    selectedTicker: 'mp_selected_ticker_v2',
-    selectedRange: 'mp_selected_range_v2',
-    sheetsUrl: 'mp_sheets_url_v2'
-  };
+const MARKET=[
+  {ticker:'SPY',name:'S&P 500 ETF'},
+  {ticker:'QQQ',name:'NASDAQ-100 ETF'},
+  {ticker:'IWM',name:'Russell 2000 ETF'}
+];
 
-  const fmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
+const TIMEFRAMES={
+  '1H':{range:'1d', interval:'5m', label:'1H', detail:'1-day / 5m bars'},
+  '1D':{range:'5d', interval:'15m',label:'1D', detail:'5-day / 15m bars'},
+  '1W':{range:'1mo',interval:'1h', label:'1W', detail:'1-month / 1h bars'},
+  '1M':{range:'1mo',interval:'1d', label:'1M', detail:'1-month / 1d bars'},
+  '1Y':{range:'1y', interval:'1d', label:'1Y', detail:'1-year / 1d bars'},
+  '3Y':{range:'3y', interval:'1wk',label:'3Y', detail:'3-year / 1wk bars'},
+  '5Y':{range:'5y', interval:'1wk',label:'5Y', detail:'5-year / 1wk bars'},
+  'MAX':{range:'max',interval:'1mo',label:'MAX',detail:'All history / 1mo bars'}
+};
 
-  const state = {
-    universe: loadUniverse(),
-    ranking: [],
-    market: {},
-    selectedTicker: localStorage.getItem(STORE.selectedTicker) || 'SPY',
-    selectedRange: localStorage.getItem(STORE.selectedRange) || '1D',
-    selectedPick: null,
-    chart: null,
-    chartLoadingToken: 0,
-    sheetsUrl: localStorage.getItem(STORE.sheetsUrl) || '',
-    refreshing: false
-  };
+const STORE={
+  universe:'mp_universe_v3',ticker:'mp_ticker_v3',
+  range:'mp_range_v3',sheets:'mp_sheets_v3',tab:'mp_tab_v3'
+};
 
-  const el = {
-    statusDot: document.getElementById('statusDot'),
-    liveStatus: document.getElementById('liveStatus'),
-    lastRefresh: document.getElementById('lastRefresh'),
-    refreshBtn: document.getElementById('refreshBtn'),
-    settingsBtn: document.getElementById('settingsBtn'),
-    tickerStrip: document.getElementById('tickerStrip'),
-    pickList: document.getElementById('pickList'),
-    scanNote: document.getElementById('scanNote'),
-    chartSymbol: document.getElementById('chartSymbol'),
-    chartName: document.getElementById('chartName'),
-    chartPrice: document.getElementById('chartPrice'),
-    chartChange: document.getElementById('chartChange'),
-    chartHint: document.getElementById('chartHint'),
-    chartPeriod: document.getElementById('chartPeriod'),
-    chartRangeDetail: document.getElementById('chartRangeDetail'),
-    marketRows: document.getElementById('marketRows'),
-    logicBox: document.getElementById('logicBox'),
-    kpiTopPick: document.getElementById('kpiTopPick'),
-    kpiTopPickSub: document.getElementById('kpiTopPickSub'),
-    kpiMomentum: document.getElementById('kpiMomentum'),
-    kpiMomentumSub: document.getElementById('kpiMomentumSub'),
-    kpiBreadth: document.getElementById('kpiBreadth'),
-    kpiBreadthSub: document.getElementById('kpiBreadthSub'),
-    kpiUniverse: document.getElementById('kpiUniverse'),
-    settingsModal: document.getElementById('settingsModal'),
-    sheetsUrl: document.getElementById('sheetsUrl'),
-    watchlistInput: document.getElementById('watchlistInput'),
-    closeSettings: document.getElementById('closeSettings'),
-    saveSettings: document.getElementById('saveSettings'),
-    mainChart: document.getElementById('mainChart')
-  };
-  const ctx = el.mainChart.getContext('2d');
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+const pct=(a,b)=>(!a||!b)?0:((b-a)/a)*100;
+const sign=v=>`${v>=0?'+':''}${Number(v).toFixed(2)}%`;
+const $2=v=>Number(v).toFixed(2);
+const now=()=>new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
 
-  function loadUniverse(){
-    try {
-      const raw = localStorage.getItem(STORE.universe);
-      if (!raw) return [...DEFAULT_UNIVERSE];
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed) || !parsed.length) return [...DEFAULT_UNIVERSE];
-      return parsed.filter(Boolean).map(x => ({
-        ticker: String(x.ticker || '').trim().toUpperCase(),
-        name: String(x.name || x.ticker || '').trim(),
-        sector: String(x.sector || 'Watchlist').trim()
-      })).filter(x => x.ticker);
-    } catch {
-      return [...DEFAULT_UNIVERSE];
-    }
+function loadUniverse(){
+  try{
+    const r=localStorage.getItem(STORE.universe);
+    if(!r) return[...DEFAULT_UNIVERSE];
+    const p=JSON.parse(r);
+    if(!Array.isArray(p)||!p.length) return[...DEFAULT_UNIVERSE];
+    return p.filter(Boolean).map(x=>({
+      ticker:String(x.ticker||'').trim().toUpperCase(),
+      name:String(x.name||x.ticker||'').trim(),
+      sector:String(x.sector||'Watchlist').trim()
+    })).filter(x=>x.ticker);
+  }catch{return[...DEFAULT_UNIVERSE];}
+}
+function saveUniverse(l){localStorage.setItem(STORE.universe,JSON.stringify(l));}
+
+// ── TRADE LEVEL CALCULATOR ──────────────────────────────────────────────────
+function calcLevels(q,mode){
+  const price=typeof q.regularMarketPrice==='number'?q.regularMarketPrice:0;
+  if(!price) return null;
+  const chg=typeof q.regularMarketChangePercent==='number'?q.regularMarketChangePercent:0;
+  const h52=q.fiftyTwoWeekHigh||price*1.35;
+  const l52=q.fiftyTwoWeekLow ||price*0.65;
+  // rough ATR estimate from annual range
+  const atr=((h52-l52)/52)*0.2;
+  let entry,target,stop,rrN,dur;
+  if(mode==='conservative'){
+    entry =+(price*(chg>=0?1.0:0.997)).toFixed(2);
+    stop  =+(entry-Math.max(atr*0.75,price*0.014)).toFixed(2);
+    const risk=entry-stop;
+    rrN=chg>2?3.5:2.5;
+    target=+(entry+risk*rrN).toFixed(2);
+    dur=atr/price>0.025?'1–2 days':'2–4 days';
+  } else {
+    entry =+(price*1.003).toFixed(2);
+    stop  =+(entry-atr*1.1).toFixed(2);
+    const risk=entry-stop;
+    rrN=6;
+    target=+(entry+risk*rrN).toFixed(2);
+    dur='1–3 days';
   }
+  const gainPct=((target-entry)/entry*100).toFixed(1);
+  const riskPct=((entry-stop)/entry*100).toFixed(1);
+  return{entry,target,stop,rr:`${rrN.toFixed(1)}:1`,gainPct,riskPct,dur};
+}
 
-  function saveUniverse(list){ localStorage.setItem(STORE.universe, JSON.stringify(list)); }
-  function pct(a,b){ if(!a || !b) return 0; return ((b-a)/a)*100; }
-  function sign(v){ return `${v>=0?'+':''}${v.toFixed(2)}%`; }
-  function nowString(){ return new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }); }
-  function setBusy(on, msg='Loading quotes…'){
-    state.refreshing = on;
-    el.refreshBtn.disabled = on;
-    el.liveStatus.textContent = on ? msg : 'Live and ready';
-    el.statusDot.style.background = on ? 'var(--warn)' : 'var(--good)';
-    el.statusDot.style.boxShadow = on ? '0 0 0 6px rgba(255,184,77,.12)' : '0 0 0 6px rgba(49,210,125,.12)';
+// ── STATE ───────────────────────────────────────────────────────────────────
+const S={
+  universe:loadUniverse(),
+  ranking:[],highReward:[],market:{},
+  selectedTicker:localStorage.getItem(STORE.ticker)||'SPY',
+  selectedRange:localStorage.getItem(STORE.range)||'1D',
+  selectedPick:null,
+  chart:null,chartToken:0,
+  sheetsUrl:localStorage.getItem(STORE.sheets)||DEFAULT_SHEETS_URL,
+  activeTab:localStorage.getItem(STORE.tab)||'top3',
+  refreshing:false,lastSync:null
+};
+
+// ── DOM ──────────────────────────────────────────────────────────────────────
+const el={
+  dot:    id('statusDot'),   live:   id('liveStatus'),
+  refresh:id('lastRefresh'), btn:    id('refreshBtn'),
+  sBtnO:  id('settingsBtn'), strip:  id('tickerStrip'),
+  list:   id('pickList'),    note:   id('scanNote'),
+  sLabel: id('syncLabel'),   sStat:  id('syncBarStatus'),
+  sText:  id('syncBarText'), sym:    id('chartSymbol'),
+  cName:  id('chartName'),   cPrice: id('chartPrice'),
+  cChg:   id('chartChange'), cHint:  id('chartHint'),
+  cPer:   id('chartPeriod'), cDet:   id('chartRangeDetail'),
+  mRows:  id('marketRows'),  logic:  id('logicBox'),
+  kPick:  id('kpiTopPick'),  kPickS: id('kpiTopPickSub'),
+  kMom:   id('kpiMomentum'), kMomS:  id('kpiMomentumSub'),
+  kBr:    id('kpiBreadth'),  kBrS:   id('kpiBreadthSub'),
+  kUni:   id('kpiUniverse'), modal:  id('settingsModal'),
+  sUrl:   id('sheetsUrl'),   wInput: id('watchlistInput'),
+  sClose: id('closeSettings'),sSave: id('saveSettings'),
+  canvas: id('mainChart'),   t3:     id('tabTop3'),
+  tHR:    id('tabHR')
+};
+function id(x){return document.getElementById(x);}
+const ctx=el.canvas.getContext('2d');
+
+// ── BUSY ─────────────────────────────────────────────────────────────────────
+function busy(on,msg='Loading…'){
+  S.refreshing=on;
+  el.btn.disabled=on;
+  el.live.textContent=on?msg:'Live & ready';
+  el.dot.style.background=on?'var(--warn)':'var(--good)';
+  el.dot.style.boxShadow=on?'0 0 0 6px rgba(255,184,77,.12)':'0 0 0 6px rgba(49,210,125,.12)';
+}
+
+// ── FETCH ────────────────────────────────────────────────────────────────────
+async function fetchJ(url,ms=12000){
+  const c=new AbortController(),t=setTimeout(()=>c.abort(),ms);
+  try{
+    const r=await fetch(url,{signal:c.signal});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  }finally{clearTimeout(t);}
+}
+
+async function fetchQuotes(syms){
+  const out=[];
+  for(let i=0;i<syms.length;i+=50){
+    const chunk=syms.slice(i,i+50);
+    const j=await fetchJ(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(chunk.join(','))}`);
+    out.push(...(j?.quoteResponse?.result||[]));
   }
+  return out;
+}
 
-  async function fetchJSON(url, timeoutMs = 10000){
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort('timeout'), timeoutMs);
-    try{
-      const res = await fetch(url, { signal: ctrl.signal });
-      if(!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
-    } finally {
-      clearTimeout(timer);
-    }
+async function fetchChart(ticker,range,interval){
+  const j=await fetchJ(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=${range}&interval=${interval}&includePrePost=false&events=div,splits`,14000);
+  const res=j?.chart?.result?.[0];
+  if(!res) throw new Error('No chart data');
+  const q=res.indicators?.quote?.[0]||{};
+  const ts=res.timestamp||[];
+  const pts=[];
+  for(let i=0;i<ts.length;i++){
+    const c=q.close?.[i];
+    if(typeof c==='number'&&isFinite(c)) pts.push({t:ts[i]*1000,close:c,vol:q.volume?.[i]||0});
   }
+  if(!pts.length) throw new Error('Empty chart');
+  return{ticker,meta:res.meta||{},points:pts,latest:pts[pts.length-1],prev:pts[Math.max(0,pts.length-2)]};
+}
 
-  async function fetchQuotes(symbols){
-    const chunks = [];
-    for(let i=0;i<symbols.length;i+=50) chunks.push(symbols.slice(i, i+50));
-    const results = [];
-    for(const chunk of chunks){
-      const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(chunk.join(','))}`;
-      const json = await fetchJSON(url, 10000);
-      const items = json?.quoteResponse?.result || [];
-      results.push(...items);
-    }
-    return results;
-  }
+// ── SCORING ──────────────────────────────────────────────────────────────────
+function score(q){
+  const chg=typeof q.regularMarketChangePercent==='number'?q.regularMarketChangePercent:0;
+  const vol=q.regularMarketVolume||0;
+  const avg=q.averageDailyVolume3Month||q.averageDailyVolume10Day||0;
+  const relVol=avg?(vol/avg):1;
+  const cap=q.marketCap||0;
+  const s=(chg*1.35)+((relVol-1)*9)+(cap?Math.log10(Math.max(cap,1))*0.06:0)+(avg?Math.log10(Math.max(avg,1))*0.02:0);
+  return{chg,relVol,s};
+}
 
-  async function fetchChart(ticker, range, interval){
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?range=${range}&interval=${interval}&includePrePost=false&events=div,splits`;
-    const json = await fetchJSON(url, 12000);
-    const result = json?.chart?.result?.[0];
-    if(!result) throw new Error('No chart data');
-    const q = result.indicators?.quote?.[0] || {};
-    const ts = result.timestamp || [];
-    const points = [];
-    for(let i=0;i<ts.length;i++){
-      const close = q.close?.[i];
-      if(typeof close !== 'number' || !isFinite(close)) continue;
-      points.push({
-        t: ts[i] * 1000,
-        close,
-        volume: q.volume?.[i] || 0
-      });
-    }
-    if(!points.length) throw new Error('Empty chart');
-    return {
-      ticker,
-      meta: result.meta || {},
-      points,
-      latest: points[points.length - 1],
-      prev: points[Math.max(0, points.length - 2)]
+// ── SPARKLINE ────────────────────────────────────────────────────────────────
+function spark(vals,color){
+  if(!vals||vals.length<2) return '';
+  const mn=Math.min(...vals),mx=Math.max(...vals),sp=mx-mn||1;
+  const xS=110/(vals.length-1);
+  const pts=vals.map((v,i)=>[i*xS, 44-((v-mn)/sp)*34-5]);
+  const path=pts.map((p,i)=>`${i?'L':'M'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');
+  const area=[`M 0 41`,...pts.map(p=>`L${p[0].toFixed(1)} ${p[1].toFixed(1)}`),'L110 41 Z'].join(' ');
+  return`<svg class="mini" viewBox="0 0 110 44" preserveAspectRatio="none"><path d="${area}" fill="rgba(255,255,255,.03)"></path><path d="${path}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round"></path></svg>`;
+}
+
+// ── PICK CARD ─────────────────────────────────────────────────────────────────
+function pickCard(x,rank,mode){
+  const up=x.change1D>=0;
+  const amber=mode==='aggressive';
+  const lvl=x.levels;
+  const act=S.selectedTicker===x.ticker?'active':'';
+  return`<article class="pick ${act}${amber?' amber':''}" data-ticker="${x.ticker}">
+  <div class="pick-top">
+    <div>
+      <div class="rank">${amber?'🔥':'🎯'} #${rank}</div>
+      <div class="sym">${x.ticker}</div>
+      <div class="name">${x.name} · ${x.sector}</div>
+    </div>
+    ${spark([100,101,99,102,103,104],up?'#31d27d':'#ff6b7a')}
+  </div>
+  <div class="meta">
+    <span class="tag ${up?'good':'bad'}">${sign(x.change1D)}</span>
+    <span class="tag ${amber?'amber':'blue'}">Score ${x.score.toFixed(1)}</span>
+    <span class="tag">Vol ${x.relVol.toFixed(1)}×</span>
+  </div>
+  ${lvl?`<div class="trade-levels">
+    <div class="tl entry"><div class="tl-label">Entry</div><div class="tl-val">$${$2(lvl.entry)}</div><div class="tl-sub">buy zone</div></div>
+    <div class="tl target"><div class="tl-label">Target</div><div class="tl-val">$${$2(lvl.target)}</div><div class="tl-sub">+${lvl.gainPct}%</div></div>
+    <div class="tl stop"><div class="tl-label">Stop</div><div class="tl-val">$${$2(lvl.stop)}</div><div class="tl-sub">−${lvl.riskPct}%</div></div>
+  </div>
+  <div class="rr-row">
+    <span class="rr-badge ${amber?'rr-amber':'rr-green'}">R:R ${lvl.rr}</span>
+    <span style="color:var(--muted);font-size:12px">⏱ ${lvl.dur}</span>
+  </div>`:''}
+  <div class="reason">${x.reason}</div>
+</article>`;
+}
+
+// ── RENDER QUOTES ─────────────────────────────────────────────────────────────
+function renderQuotes(items){
+  const ranked=items.map(q=>{
+    const b=S.universe.find(x=>x.ticker===q.symbol)||{ticker:q.symbol,name:q.shortName||q.symbol,sector:'Watchlist'};
+    const m=score(q);
+    const price=typeof q.regularMarketPrice==='number'?q.regularMarketPrice:0;
+    return{
+      ticker:q.symbol,name:b.name||q.longName||q.shortName||q.symbol,sector:b.sector||'Watchlist',
+      price,change1D:m.chg,relVol:m.relVol,score:m.s,
+      levels:calcLevels(q,'conservative'),
+      levelsAgg:calcLevels(q,'aggressive'),
+      reason:`${m.chg>=0?'Up':'Down'} ${Math.abs(m.chg).toFixed(2)}% · ${m.relVol.toFixed(1)}× relative volume`,
+      quote:q
     };
+  }).sort((a,b)=>b.score-a.score||b.change1D-a.change1D);
+
+  S.ranking=ranked;
+  S.highReward=[...ranked].sort((a,b)=>b.relVol-a.relVol||b.change1D-a.change1D).slice(0,5);
+
+  S.market={};
+  MARKET.forEach(m=>{
+    const q=items.find(x=>x.symbol===m.ticker);
+    if(q) S.market[m.ticker]={ticker:m.ticker,name:m.name,price:q.regularMarketPrice||0,change1D:q.regularMarketChangePercent||0};
+  });
+
+  const top=ranked[0];
+  const mom=[...ranked].sort((a,b)=>Math.abs(b.change1D)-Math.abs(a.change1D))[0];
+  const adv=ranked.filter(x=>x.change1D>=0).length;
+  el.kUni.textContent=S.universe.length;
+  el.kPick.textContent=top?top.ticker:'—';
+  el.kPickS.textContent=top?`${top.name} · ${top.sector}`:'No data';
+  el.kMom.textContent=mom?mom.ticker:'—';
+  el.kMomS.textContent=mom?sign(mom.change1D):'—';
+  el.kBr.textContent=ranked.length?`${adv}/${ranked.length}`:'—';
+  el.kBrS.textContent=ranked.length?`${adv} up, ${ranked.length-adv} down`:'—';
+  el.live.textContent=top?`Top: ${ranked.slice(0,3).map(x=>x.ticker).join(', ')}`:'No data';
+  el.refresh.textContent=now();
+  el.note.textContent=top?`Top pick: ${top.ticker} · Entry ~$${$2(top.levels?.entry||top.price)} · Target ~$${$2(top.levels?.target||top.price)}`:'No data.';
+
+  renderStrip(ranked);
+  renderTab(S.activeTab);
+  renderMarket();
+  renderLogic(top);
+  renderChartHeader(S.selectedPick||top||null);
+  busy(false);
+  const sel=S.selectedPick||top;
+  if(sel) loadChart(sel.ticker,S.selectedRange);
+  syncToSheets();
+}
+
+function renderStrip(ranked){
+  el.strip.innerHTML=ranked.slice(0,12).map(x=>`
+    <button class="pill ${S.selectedTicker===x.ticker?'active':''}" data-ticker="${x.ticker}">
+      <span class="sym">${x.ticker}</span>
+      <span class="chg ${x.change1D>=0?'good':'bad'}">${sign(x.change1D)}</span>
+    </button>`).join('');
+  el.strip.querySelectorAll('.pill').forEach(b=>b.addEventListener('click',()=>selectTicker(b.dataset.ticker)));
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function showTab(tab){
+  S.activeTab=tab;
+  localStorage.setItem(STORE.tab,tab);
+  el.t3.classList.toggle('active',tab==='top3');
+  el.tHR.classList.toggle('active',tab==='highreward');
+  renderTab(tab);
+}
+window.showTab=showTab;
+
+function renderTab(tab){
+  if(tab==='top3'){
+    const picks=S.ranking.slice(0,3);
+    if(!picks.length){el.list.innerHTML='<div class="loading" style="grid-column:1/-1">No data yet.</div>';return;}
+    el.list.innerHTML=picks.map((x,i)=>pickCard(x,i+1,'conservative')).join('');
+  }else{
+    const picks=S.highReward.slice(0,4);
+    if(!picks.length){el.list.innerHTML='<div class="loading" style="grid-column:1/-1">No data yet.</div>';return;}
+    el.list.innerHTML=picks.map((x,i)=>pickCard({...x,levels:x.levelsAgg},i+1,'aggressive')).join('');
   }
+  el.list.querySelectorAll('.pick').forEach(c=>c.addEventListener('click',()=>selectTicker(c.dataset.ticker)));
+}
 
-  function scoreQuote(q){
-    const chgPct = typeof q.regularMarketChangePercent === 'number' ? q.regularMarketChangePercent : 0;
-    const volume = q.regularMarketVolume || 0;
-    const avgVol = q.averageDailyVolume3Month || q.averageDailyVolume10Day || 0;
-    const relVol = avgVol ? (volume / avgVol) : 1;
-    const cap = q.marketCap || 0;
-    const sizeBonus = cap ? Math.log10(Math.max(cap, 1)) * 0.06 : 0;
-    const liquidity = avgVol ? Math.log10(Math.max(avgVol, 1)) * 0.02 : 0;
-    const score = (chgPct * 1.35) + ((relVol - 1) * 9) + sizeBonus + liquidity;
-    return { chgPct, relVol, score };
+function renderMarket(){
+  el.mRows.innerHTML=MARKET.map(m=>{
+    const item=S.market[m.ticker];
+    if(!item) return`<div class="row"><div class="left"><strong>${m.ticker}</strong><span>${m.name}</span></div><div class="right"><strong>—</strong><span>Loading</span></div></div>`;
+    return`<div class="row"><div class="left"><strong>${m.ticker}</strong><span>${m.name}</span></div><div class="right"><strong class="${item.change1D>=0?'good':'bad'}">${$2(item.price)}</strong><span class="${item.change1D>=0?'good':'bad'}">${sign(item.change1D)}</span></div></div>`;
+  }).join('');
+}
+
+function renderLogic(item){
+  if(!item){el.logic.innerHTML='<div class="loading skeleton" style="border-radius:13px;min-height:120px"></div>';return;}
+  const l=item.levels;
+  el.logic.innerHTML=`
+    <div class="row"><div class="left"><strong>${item.ticker}</strong><span>${item.name}</span></div><div class="right"><strong class="${item.change1D>=0?'good':'bad'}">${sign(item.change1D)}</strong><span>today</span></div></div>
+    <div class="row"><div class="left"><strong>Momentum score</strong><span>Change · vol · liquidity</span></div><div class="right"><strong>${item.score.toFixed(1)}</strong><span>higher = better</span></div></div>
+    <div class="row"><div class="left"><strong>Relative volume</strong><span>vs 3-month avg</span></div><div class="right"><strong>${item.relVol.toFixed(1)}×</strong><span>activity</span></div></div>
+    ${l?`<div class="row"><div class="left"><strong>Trade levels</strong><span>Entry → Target → Stop</span></div><div class="right"><strong class="good">$${$2(l.entry)} → $${$2(l.target)}</strong><span class="bad">Stop $${$2(l.stop)}</span></div></div>`:''}`;
+}
+
+// ── CHART ─────────────────────────────────────────────────────────────────────
+function renderChartHeader(item){
+  el.sym.textContent  =item?.ticker||'SPY';
+  el.cName.textContent=item?.name||'S&P 500 ETF';
+  el.cPrice.textContent=item?.price?'$'+$2(item.price):'—';
+  el.cChg.textContent =item?sign(item.change1D)+' today':'Loading…';
+  el.cChg.className   =`change ${item&&item.change1D>=0?'good':'bad'}`;
+  el.cHint.textContent=item?`${item.sector} · score ${item.score?.toFixed(1)||'—'}`:'Click a stock to load chart.';
+}
+
+async function loadChart(ticker,rangeKey){
+  const token=++S.chartToken;
+  const cfg=TIMEFRAMES[rangeKey];
+  const pick=S.ranking.find(x=>x.ticker===ticker)||null;
+  renderChartHeader(pick);
+  el.cHint.textContent=`Loading ${ticker} chart…`;
+  try{
+    const data=await fetchChart(ticker,cfg.range,cfg.interval);
+    if(token!==S.chartToken) return;
+    const latest=data.latest.close,prev=data.prev?.close||latest;
+    const chg=pct(prev,latest);
+    el.cPrice.textContent='$'+$2(latest);
+    el.cChg.textContent=sign(chg)+' latest bar';
+    el.cChg.className=`change ${chg>=0?'good':'bad'}`;
+    el.cHint.textContent=pick?`${pick.sector} · score ${pick.score?.toFixed(1)||'—'}`:'Loaded';
+    el.cPer.textContent=cfg.label+' view';
+    el.cDet.textContent=cfg.detail;
+    buildChart(data,chg>=0);
+  }catch(err){
+    if(token!==S.chartToken) return;
+    el.cHint.textContent=`Could not load ${ticker} chart.`;
+    el.cPrice.textContent='—';
+    el.cChg.className='change bad';
+    el.cChg.textContent='Data unavailable';
+    if(S.chart) S.chart.destroy();
+    S.chart=null;
+    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
   }
+}
 
-  function buildSparkline(values, color = '#7c8cff'){
-    if(!values || values.length < 2) return '';
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const span = max - min || 1;
-    const w = 110, h = 44;
-    const xStep = w / (values.length - 1);
-    const pts = values.map((v,i) => {
-      const x = i * xStep;
-      const y = h - ((v - min) / span) * 34 - 5;
-      return [x, y];
-    });
-    const path = pts.map((p,i) => `${i === 0 ? 'M' : 'L'} ${p[0].toFixed(2)} ${p[1].toFixed(2)}`).join(' ');
-    const area = [`M 0 41`, ...pts.map(p => `L ${p[0].toFixed(2)} ${p[1].toFixed(2)}`), `L 110 41 Z`].join(' ');
-    return `
-      <svg class="mini" viewBox="0 0 110 44" preserveAspectRatio="none">
-        <path d="${area}" fill="rgba(255,255,255,.03)"></path>
-        <path d="${path}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
-      </svg>`;
-  }
-
-  function renderQuotes(items){
-    const ranked = items.map(q => {
-      const basis = state.universe.find(x => x.ticker === q.symbol) || { ticker:q.symbol, name:q.shortName || q.symbol, sector:'Watchlist' };
-      const metrics = scoreQuote(q);
-      return {
-        ticker: q.symbol,
-        name: basis.name || q.longName || q.shortName || q.symbol,
-        sector: basis.sector || 'Watchlist',
-        price: typeof q.regularMarketPrice === 'number' ? q.regularMarketPrice : 0,
-        change1D: metrics.chgPct,
-        relVol: metrics.relVol,
-        score: metrics.score,
-        marketCap: q.marketCap || 0,
-        volume: q.regularMarketVolume || 0,
-        avgVolume: q.averageDailyVolume3Month || q.averageDailyVolume10Day || 0,
-        reason: `${metrics.chgPct >= 0 ? 'Up' : 'Down'} ${Math.abs(metrics.chgPct).toFixed(2)}% today • ${metrics.relVol.toFixed(1)}x relative volume`,
-        spark: null,
-        quote: q
-      };
-    }).sort((a,b) => b.score - a.score || b.change1D - a.change1D);
-
-    state.ranking = ranked;
-    state.selectedPick = ranked.find(x => x.ticker === state.selectedTicker) || ranked[0] || null;
-    state.market = {};
-    MARKET.forEach(m => {
-      const q = items.find(x => x.symbol === m.ticker);
-      if(q){
-        state.market[m.ticker] = {
-          ticker: m.ticker,
-          name: m.name,
-          price: typeof q.regularMarketPrice === 'number' ? q.regularMarketPrice : 0,
-          change1D: typeof q.regularMarketChangePercent === 'number' ? q.regularMarketChangePercent : 0
-        };
-      }
-    });
-
-    el.kpiUniverse.textContent = state.universe.length;
-    const top = ranked[0];
-    const momentum = [...ranked].sort((a,b) => Math.abs(b.change1D) - Math.abs(a.change1D))[0];
-    const adv = ranked.filter(x => x.change1D >= 0).length;
-    const dec = ranked.length - adv;
-
-    el.kpiTopPick.textContent = top ? top.ticker : '—';
-    el.kpiTopPickSub.textContent = top ? `${top.name} • ${top.sector}` : 'No data';
-    el.kpiMomentum.textContent = momentum ? momentum.ticker : '—';
-    el.kpiMomentumSub.textContent = momentum ? `${sign(momentum.change1D)} today` : 'No data';
-    el.kpiBreadth.textContent = ranked.length ? `${adv}/${ranked.length}` : '—';
-    el.kpiBreadthSub.textContent = ranked.length ? `${adv} up, ${dec} down` : 'No data';
-
-    el.liveStatus.textContent = top ? `Top now: ${ranked.slice(0,3).map(x => x.ticker).join(', ')}` : 'No data';
-    el.lastRefresh.textContent = nowString();
-    el.scanNote.textContent = top ? `Top stock this hour: ${top.ticker}. Click a card to open its chart right away.` : 'No quote data was returned.';
-    renderTickerStrip(ranked);
-    renderPickList(ranked);
-    renderMarketRows();
-    renderLogic(top);
-    renderChartHeader(state.selectedPick || top || null);
-    setBusy(false);
-    if (state.selectedPick) loadChart(state.selectedPick.ticker, state.selectedRange);
-  }
-
-  function renderTickerStrip(ranked){
-    el.tickerStrip.innerHTML = ranked.slice(0,10).map(x => `
-      <button class="pill ${state.selectedTicker === x.ticker ? 'active' : ''}" data-ticker="${x.ticker}">
-        <span class="sym">${x.ticker}</span>
-        <span class="chg ${x.change1D >= 0 ? 'good' : 'bad'}">${sign(x.change1D)}</span>
-      </button>
-    `).join('');
-  }
-
-  function renderPickList(ranked){
-    if(!ranked.length){
-      el.pickList.innerHTML = `<div class="error" style="border:1px solid rgba(255,107,122,.25);background:rgba(255,107,122,.08);border-radius:18px;padding:18px;color:#ffd9de"><div><strong>No market data could be loaded.</strong></div><div style="margin-top:8px;line-height:1.5">Host on HTTPS or GitHub Pages. The browser needs to reach public chart endpoints.</div></div>`;
-      return;
-    }
-    el.pickList.innerHTML = ranked.slice(0,6).map((x,i) => {
-      const active = state.selectedTicker === x.ticker ? 'active' : '';
-      const up = x.change1D >= 0;
-      return `
-        <article class="pick ${active}" data-ticker="${x.ticker}">
-          <div class="pick-top">
-            <div>
-              <div class="rank">Rank #${i+1}</div>
-              <div class="sym">${x.ticker}</div>
-              <div class="name">${x.name}<br><span style="color:var(--muted)">${x.sector}</span></div>
-            </div>
-            <div class="mini">${buildSparkline([100,101,99,102,103,104], up ? '#31d27d' : '#ff6b7a')}</div>
-          </div>
-          <div class="meta">
-            <span class="tag ${up ? 'good' : 'bad'}">${sign(x.change1D)} 1D</span>
-            <span class="tag">Score ${x.score.toFixed(1)}</span>
-            <span class="tag">Rel vol ${x.relVol.toFixed(1)}x</span>
-          </div>
-          <div class="metrics">
-            <div class="metric"><div class="label">Price</div><div class="val">${x.price ? '$' + x.price.toFixed(2) : '—'}</div><div class="sub">current</div></div>
-            <div class="metric"><div class="label">Momentum</div><div class="val ${up ? 'good' : 'bad'}">${up ? 'Up' : 'Down'}</div><div class="sub">today</div></div>
-            <div class="metric"><div class="label">Worth noting</div><div class="val">${Math.round(x.score)}</div><div class="sub">ranking score</div></div>
-          </div>
-          <div class="reason">${x.reason}</div>
-        </article>
-      `;
-    }).join('');
-    document.querySelectorAll('.pick').forEach(card => card.addEventListener('click', () => selectTicker(card.dataset.ticker)));
-    document.querySelectorAll('.pill').forEach(btn => btn.addEventListener('click', () => selectTicker(btn.dataset.ticker)));
-  }
-
-  function renderMarketRows(){
-    const items = MARKET.map(m => state.market[m.ticker] || null);
-    el.marketRows.innerHTML = items.map((item, idx) => {
-      const def = MARKET[idx];
-      if(!item){
-        return `<div class="row"><div class="left"><strong>${def.ticker}</strong><span>${def.name}</span></div><div class="right"><strong>—</strong><span>Loading</span></div></div>`;
-      }
-      return `<div class="row"><div class="left"><strong>${def.ticker}</strong><span>${def.name}</span></div><div class="right"><strong class="${item.change1D >= 0 ? 'good' : 'bad'}">${item.price.toFixed(2)}</strong><span class="${item.change1D >= 0 ? 'good' : 'bad'}">${sign(item.change1D)} today</span></div></div>`;
-    }).join('');
-  }
-
-  function renderLogic(item){
-    if(!item){
-      el.logicBox.innerHTML = `<div class="loading skeleton" style="border-radius:16px;min-height:150px">Loading ranking logic…</div>`;
-      return;
-    }
-    el.logicBox.innerHTML = `
-      <div class="row"><div class="left"><strong>${item.ticker} — top pick</strong><span>${item.name}</span></div><div class="right"><strong class="${item.change1D >= 0 ? 'good' : 'bad'}">${sign(item.change1D)}</strong><span>1 day</span></div></div>
-      <div class="row"><div class="left"><strong>Momentum score</strong><span>Weighted from daily change, volume, and liquidity</span></div><div class="right"><strong>${item.score.toFixed(1)}</strong><span>higher is better</span></div></div>
-      <div class="row"><div class="left"><strong>Relative volume</strong><span>Compared with average 3 month volume</span></div><div class="right"><strong>${item.relVol.toFixed(1)}x</strong><span>activity</span></div></div>
-    `;
-  }
-
-  function renderChartHeader(item){
-    el.chartSymbol.textContent = item?.ticker || 'SPY';
-    el.chartName.textContent = item?.name || 'S&P 500 ETF';
-    el.chartPrice.textContent = item?.price ? '$' + item.price.toFixed(2) : '—';
-    el.chartChange.textContent = item ? `${sign(item.change1D)} today` : 'Loading…';
-    el.chartChange.className = `change ${item && item.change1D >= 0 ? 'good' : 'bad'}`;
-    el.chartHint.textContent = item ? `${item.sector} • score ${item.score.toFixed(1)}` : 'Choose a ticker to load the chart.';
-  }
-
-  function buildChart(series, rangeKey){
-    const cfg = TIMEFRAMES[rangeKey];
-    if(state.chart) state.chart.destroy();
-    state.chart = new Chart(ctx, {
-      type:'line',
-      data:{
-        labels: series.points.map(p => new Date(p.t)),
-        datasets:[{
-          data: series.points.map(p => p.close),
-          borderColor:'#7c8cff',
-          borderWidth:2.5,
-          pointRadius:0,
-          tension:.28,
-          fill:true,
-          backgroundColor:(context) => {
-            const chart = context.chart;
-            if (!chart.chartArea) return 'rgba(124,140,255,.2)';
-            const g = chart.ctx.createLinearGradient(0, chart.chartArea.top, 0, chart.chartArea.bottom);
-            g.addColorStop(0, 'rgba(124,140,255,.22)');
-            g.addColorStop(1, 'rgba(255,255,255,0)');
-            return g;
-          }
-        }]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false},
-        plugins:{
-          legend:{display:false},
-          tooltip:{
-            backgroundColor:'rgba(9,14,24,.96)', borderColor:'rgba(148,163,184,.2)', borderWidth:1, displayColors:false,
-            titleColor:'#edf4ff', bodyColor:'#edf4ff',
-            callbacks:{ label:(c) => ` $${c.parsed.y.toFixed(2)}` }
-          }
-        },
-        scales:{
-          x:{ grid:{ color:'rgba(255,255,255,.05)' }, ticks:{ color:'#8fa3bf', maxTicksLimit:6 } },
-          y:{ grid:{ color:'rgba(255,255,255,.05)' }, ticks:{ color:'#8fa3bf', callback:v => `$${Number(v).toFixed(0)}` } }
+function buildChart(series,isUp){
+  if(S.chart) S.chart.destroy();
+  const color=isUp?'#31d27d':'#ff6b7a';
+  S.chart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:series.points.map(p=>new Date(p.t)),
+      datasets:[{
+        data:series.points.map(p=>p.close),
+        borderColor:color,borderWidth:2.5,pointRadius:0,tension:.28,fill:true,
+        backgroundColor:(ctx2)=>{
+          const chart=ctx2.chart;
+          if(!chart.chartArea) return isUp?'rgba(49,210,125,.15)':'rgba(255,107,122,.12)';
+          const g=chart.ctx.createLinearGradient(0,chart.chartArea.top,0,chart.chartArea.bottom);
+          g.addColorStop(0,isUp?'rgba(49,210,125,.22)':'rgba(255,107,122,.18)');
+          g.addColorStop(1,'rgba(255,255,255,0)');
+          return g;
         }
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:'rgba(9,14,24,.96)',borderColor:'rgba(148,163,184,.2)',borderWidth:1,displayColors:false,titleColor:'#edf4ff',bodyColor:'#edf4ff',callbacks:{label:c=>` $${c.parsed.y.toFixed(2)}`}}
+      },
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8fa3bf',maxTicksLimit:6,font:{size:11}}},
+        y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#8fa3bf',callback:v=>`$${Number(v).toFixed(0)}`,font:{size:11}}}
       }
-    });
-    el.chartPeriod.textContent = cfg.label;
-    el.chartRangeDetail.textContent = cfg.detail;
-  }
-
-  async function loadChart(ticker, rangeKey){
-    const token = ++state.chartLoadingToken;
-    const cfg = TIMEFRAMES[rangeKey];
-    const pick = state.ranking.find(x => x.ticker === ticker) || state.market[ticker] || null;
-    renderChartHeader(pick);
-    el.chartHint.textContent = `Loading ${ticker} chart…`;
-    try{
-      const data = await fetchChart(ticker, cfg.range, cfg.interval);
-      if(token !== state.chartLoadingToken) return;
-      const latest = data.latest.close;
-      const prev = data.prev?.close || latest;
-      const change = pct(prev, latest);
-      el.chartPrice.textContent = '$' + latest.toFixed(2);
-      el.chartChange.textContent = `${sign(change)} on the latest bar`;
-      el.chartChange.className = `change ${change >= 0 ? 'good' : 'bad'}`;
-      el.chartHint.textContent = pick ? `${pick.sector || 'Market'} • score ${pick.score.toFixed(1)}` : 'Loaded';
-      buildChart(data, rangeKey);
-    }catch(err){
-      console.error(err);
-      if(token !== state.chartLoadingToken) return;
-      el.chartHint.textContent = `Unable to load ${ticker} chart right now.`;
-      el.chartPrice.textContent = '—';
-      el.chartChange.className = 'change bad';
-      el.chartChange.textContent = 'Data unavailable';
-      if(state.chart) state.chart.destroy();
-      state.chart = null;
-      ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
     }
-  }
+  });
+}
 
-  function selectTicker(ticker){
-    state.selectedTicker = ticker;
-    localStorage.setItem(STORE.selectedTicker, ticker);
-    state.selectedPick = state.ranking.find(x => x.ticker === ticker) || state.market[ticker] || null;
-    document.querySelectorAll('.pick').forEach(x => x.classList.toggle('active', x.dataset.ticker === ticker));
-    document.querySelectorAll('.pill').forEach(x => x.classList.toggle('active', x.dataset.ticker === ticker));
-    renderChartHeader(state.selectedPick);
-    loadChart(ticker, state.selectedRange);
-    renderLogic(state.ranking[0] || state.selectedPick);
-  }
+function selectTicker(ticker){
+  S.selectedTicker=ticker;
+  localStorage.setItem(STORE.ticker,ticker);
+  S.selectedPick=S.ranking.find(x=>x.ticker===ticker)||null;
+  document.querySelectorAll('.pick').forEach(x=>x.classList.toggle('active',x.dataset.ticker===ticker));
+  document.querySelectorAll('.pill').forEach(x=>x.classList.toggle('active',x.dataset.ticker===ticker));
+  renderChartHeader(S.selectedPick);
+  loadChart(ticker,S.selectedRange);
+  renderLogic(S.ranking[0]||S.selectedPick);
+}
 
-  function setRange(rangeKey){
-    state.selectedRange = rangeKey;
-    localStorage.setItem(STORE.selectedRange, rangeKey);
-    document.querySelectorAll('.chip').forEach(x => x.classList.toggle('active', x.dataset.range === rangeKey));
-    loadChart(state.selectedTicker, rangeKey);
-  }
+function setRange(k){
+  S.selectedRange=k;
+  localStorage.setItem(STORE.range,k);
+  document.querySelectorAll('.chip').forEach(x=>x.classList.toggle('active',x.dataset.range===k));
+  loadChart(S.selectedTicker,k);
+}
 
-  async function syncToSheets(){
-    if(!state.sheetsUrl) return;
-    const payload = {
-      generatedAt: new Date().toISOString(),
-      selectedTicker: state.selectedTicker,
-      selectedRange: state.selectedRange,
-      topPicks: state.ranking.slice(0,6).map(x => ({
-        ticker:x.ticker, name:x.name, sector:x.sector, price:x.price, change1D:x.change1D, score:x.score, reason:x.reason
-      })),
-      market: state.market
-    };
-    try{
-      await fetch(state.sheetsUrl, {
-        method:'POST', mode:'no-cors',
-        headers:{ 'Content-Type':'application/json' },
-        body: JSON.stringify(payload)
-      });
-    }catch(e){
-      console.warn('Sheets sync skipped:', e);
-    }
-  }
+// ── SHEETS SYNC ───────────────────────────────────────────────────────────────
+function pickPayload(arr,mode){
+  return arr.map((x,i)=>({
+    rank:i+1,ticker:x.ticker,name:x.name,sector:x.sector,
+    price:x.price,change1D:x.change1D,relVol:x.relVol,score:x.score,
+    entry:      (mode==='agg'?x.levelsAgg:x.levels)?.entry||'',
+    exitTarget: (mode==='agg'?x.levelsAgg:x.levels)?.target||'',
+    stopLoss:   (mode==='agg'?x.levelsAgg:x.levels)?.stop||'',
+    rr:         (mode==='agg'?x.levelsAgg:x.levels)?.rr||'',
+    duration:   (mode==='agg'?x.levelsAgg:x.levels)?.dur||'',
+    reason:x.reason
+  }));
+}
 
-  async function refreshAll(){
-    setBusy(true, 'Loading quotes instantly…');
-    el.scanNote.textContent = 'Loading quote batch…';
-    const symbols = [...new Set([...state.universe.map(x => x.ticker), ...MARKET.map(x => x.ticker)])];
-    try{
-      const items = await fetchQuotes(symbols);
-      renderQuotes(items);
-      if(state.sheetsUrl) syncToSheets();
-    }catch(err){
-      console.error(err);
-      setBusy(false, 'Quote load failed');
-      el.scanNote.textContent = 'Could not load quotes. Open the page through HTTPS and check browser console for the endpoint response.';
-      el.pickList.innerHTML = `<div class="error" style="border:1px solid rgba(255,107,122,.25);background:rgba(255,107,122,.08);border-radius:18px;padding:18px;color:#ffd9de"><div><strong>Quote load failed.</strong></div><div style="margin-top:8px;line-height:1.5">The browser could not reach the market endpoint. This page needs HTTPS and live network access.</div></div>`;
-    }
+async function syncToSheets(){
+  const url=S.sheetsUrl;
+  if(!url) return;
+  const payload={
+    generatedAt:new Date().toISOString(),
+    selectedTicker:S.selectedTicker,
+    selectedRange:S.selectedRange,
+    market:S.market,
+    topPicks:pickPayload(S.ranking.slice(0,3),'cons'),
+    highRewardPicks:pickPayload(S.highReward.slice(0,5),'agg')
+  };
+  setSyncUI('pending','Syncing…');
+  try{
+    await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    S.lastSync=now();
+    setSyncUI('ok','✓ Synced at '+S.lastSync);
+  }catch(e){
+    setSyncUI('none','Sync failed — verify URL in Settings');
+    console.warn('Sheets sync:',e);
   }
+}
 
-  function openSettings(){
-    el.sheetsUrl.value = state.sheetsUrl;
-    el.watchlistInput.value = state.universe.map(x => x.ticker).join(', ');
-    el.settingsModal.classList.add('open');
+function forceSyncToSheets(){if(S.ranking.length) syncToSheets();}
+window.forceSyncToSheets=forceSyncToSheets;
+
+function setSyncUI(type,text){
+  const cls={ok:'sync-ok',pending:'sync-pending',none:'sync-none'};
+  el.sStat.className='status '+(cls[type]||'sync-none');
+  el.sStat.textContent=type==='ok'?'✓ Synced':type==='pending'?'Syncing…':'Not synced';
+  el.sText.textContent=text;
+  el.sLabel.textContent=type==='ok'?'✓ '+S.lastSync:type==='pending'?'Syncing…':'Not synced';
+}
+
+// ── REFRESH ───────────────────────────────────────────────────────────────────
+async function refreshAll(){
+  busy(true,'Fetching quotes…');
+  const syms=[...new Set([...S.universe.map(x=>x.ticker),...MARKET.map(x=>x.ticker)])];
+  try{
+    const items=await fetchQuotes(syms);
+    renderQuotes(items);
+  }catch(err){
+    console.error(err);
+    busy(false,'Quote load failed');
+    el.note.textContent='Could not reach market endpoint. Host on HTTPS / GitHub Pages.';
+    el.list.innerHTML=`<div class="error" style="border:1px solid rgba(255,107,122,.25);background:rgba(255,107,122,.08);border-radius:16px;padding:18px;color:#ffd9de;grid-column:1/-1"><strong>Quote load failed.</strong><div style="margin-top:8px;line-height:1.5">Host on HTTPS. The browser needs live network access.</div></div>`;
   }
-  function closeSettings(){ el.settingsModal.classList.remove('open'); }
-  function saveSettings(){
-    const url = el.sheetsUrl.value.trim();
-    const text = el.watchlistInput.value.trim();
-    state.sheetsUrl = url;
-    if(url) localStorage.setItem(STORE.sheetsUrl, url);
-    else localStorage.removeItem(STORE.sheetsUrl);
+}
 
-    if(text){
-      const tickers = [...new Set(text.split(',').map(s => s.trim().toUpperCase()).filter(Boolean))];
-      state.universe = tickers.map(t => {
-        const existing = DEFAULT_UNIVERSE.find(x => x.ticker === t);
-        return existing || { ticker:t, name:t, sector:'Watchlist' };
-      });
-      saveUniverse(state.universe);
-    }
-    closeSettings();
-    refreshAll();
+// ── SETTINGS ─────────────────────────────────────────────────────────────────
+function openSettings(){
+  el.sUrl.value=S.sheetsUrl;
+  el.wInput.value=S.universe.map(x=>x.ticker).join(', ');
+  el.modal.classList.add('open');
+}
+function closeSettings(){el.modal.classList.remove('open');}
+function saveSettings(){
+  const url=el.sUrl.value.trim();
+  const text=el.wInput.value.trim();
+  S.sheetsUrl=url||DEFAULT_SHEETS_URL;
+  if(url) localStorage.setItem(STORE.sheets,url);
+  else    localStorage.removeItem(STORE.sheets);
+  if(text){
+    const tks=[...new Set(text.split(',').map(s=>s.trim().toUpperCase()).filter(Boolean))];
+    S.universe=tks.map(t=>{const ex=DEFAULT_UNIVERSE.find(x=>x.ticker===t);return ex||{ticker:t,name:t,sector:'Watchlist'};});
+    saveUniverse(S.universe);
   }
+  closeSettings();
+  refreshAll();
+}
 
-  function wireUI(){
-    el.refreshBtn.addEventListener('click', refreshAll);
-    el.settingsBtn.addEventListener('click', openSettings);
-    el.closeSettings.addEventListener('click', closeSettings);
-    el.saveSettings.addEventListener('click', saveSettings);
-    el.settingsModal.addEventListener('click', e => { if(e.target === el.settingsModal) closeSettings(); });
-    document.querySelectorAll('.chip').forEach(btn => btn.addEventListener('click', () => setRange(btn.dataset.range)));
-  }
-
-  function init(){
-    wireUI();
-    document.querySelectorAll('.chip').forEach(btn => btn.classList.toggle('active', btn.dataset.range === state.selectedRange));
-    renderChartHeader(null);
-    setBusy(true, 'Loading quotes instantly…');
-    refreshAll();
-    setInterval(refreshAll, 5 * 60 * 1000);
-  }
-
-  init();
+// ── INIT ─────────────────────────────────────────────────────────────────────
+el.btn.addEventListener('click',refreshAll);
+el.sBtnO.addEventListener('click',openSettings);
+el.sClose.addEventListener('click',closeSettings);
+el.sSave.addEventListener('click',saveSettings);
+el.modal.addEventListener('click',e=>{if(e.target===el.modal) closeSettings();});
+document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>setRange(b.dataset.range)));
+document.querySelectorAll('.chip').forEach(b=>b.classList.toggle('active',b.dataset.range===S.selectedRange));
+renderChartHeader(null);
+busy(true,'Fetching live quotes…');
+setSyncUI('none','Waiting for first data load…');
+refreshAll();
+setInterval(refreshAll,5*60*1000); // refresh every 5 min
 })();
 </script>
 </body>
