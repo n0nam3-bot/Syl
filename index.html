@@ -91,6 +91,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 }
 .tab-btn.active-top{border-color:var(--green2);color:var(--green);background:rgba(34,224,122,.08)}
 .tab-btn.active-hr{border-color:#7a4f00;color:var(--yellow);background:rgba(240,194,51,.07)}
+.tab-btn.active-wl{border-color:var(--blue2);color:var(--blue);background:rgba(59,158,255,.08)}
 .tab-btn:hover:not(.active-top):not(.active-hr){color:var(--txt)}
 #picks-lbl{font-size:10px;color:var(--txt3);margin-left:auto;font-family:var(--font-mono)}
 #picks-list{flex:1;overflow-y:auto;padding:8px}
@@ -102,6 +103,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 .pick-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px}
 .pick-card.top::before{background:var(--green)}
 .pick-card.hr::before{background:var(--yellow)}
+.pick-card.wl::before{background:var(--blue)}
 .pick-card:hover{border-color:var(--border2);background:var(--bg4)}
 .pick-card.active{border-color:var(--blue2);background:#0d1a2e}
 .pick-row1{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
@@ -356,9 +358,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     <div class="stat-sub" id="st-breadth-sub">Up / Down</div>
   </div>
   <div class="stat-cell">
-    <div class="stat-lbl">Symbols</div>
+    <div class="stat-lbl">Universe</div>
     <div class="stat-val" id="st-count">—</div>
-    <div class="stat-sub">in universe</div>
+    <div class="stat-sub" id="st-count-sub">stocks scanned</div>
   </div>
   <div class="stat-cell">
     <div class="stat-lbl">SPY</div>
@@ -375,6 +377,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     <div id="picks-header">
       <button class="tab-btn active-top" id="tab-top" onclick="switchTab('top')">🎯 Top 3</button>
       <button class="tab-btn" id="tab-hr" onclick="switchTab('hr')">🔥 High Reward</button>
+      <button class="tab-btn" id="tab-wl" onclick="switchTab('wl')">⭐ Watchlist</button>
       <div id="picks-lbl">auto-sync ✓</div>
     </div>
     <div id="picks-list">
@@ -505,9 +508,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
         <div class="form-group">
           <label class="form-label">Auto-Refresh Interval</label>
           <select id="refresh-select" class="form-input">
-            <option value="60000" selected>1 minute</option>
+            <option value="60000">1 minute</option>
             <option value="180000">3 minutes</option>
-            <option value="300000">5 minutes</option>
+            <option value="300000" selected>5 minutes</option>
             <option value="600000">10 minutes</option>
             <option value="0">Manual only</option>
           </select>
@@ -528,12 +531,29 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 // ═══════════════════════════════════════════════════════════════════════════
 // CONFIGURATION — update GAS_URL after deploying Apps Script
 // ═══════════════════════════════════════════════════════════════════════════
-const DEFAULT_WATCHLIST = [
-  'AAPL','MSFT','NVDA','TSLA','AMZN','META','GOOGL','AMD',
-  'NFLX','CRM','AVGO','ORCL','PLTR','ARM','SMCI',
-  'SPY','QQQ','IWM'
+// Broad scan universe — Top 3 & High Reward always come from here, regardless of watchlist
+const UNIVERSE = [
+  // Mega-cap tech
+  'AAPL','MSFT','NVDA','META','GOOGL','AMZN','TSLA','AVGO','ORCL','ADBE',
+  // Mid-cap tech / growth
+  'AMD','CRM','PLTR','ARM','SMCI','SNOW','NET','DDOG','MDB','ZS',
+  'CRWD','PANW','UBER','LYFT','ABNB','SHOP','MELI','NFLX','ROKU','RBLX',
+  // Semis
+  'INTC','QCOM','MU','AMAT','LRCX','KLAC','TSM','ON','TXN','MRVL',
+  // Financials
+  'JPM','BAC','GS','MS','V','MA','AXP','PYPL','SQ','COIN',
+  // Healthcare / Biotech
+  'UNH','JNJ','PFE','MRNA','ABBV','LLY','REGN','GILD','ISRG','DXCM',
+  // Consumer / Retail
+  'NKE','SBUX','MCD','DIS','COST','TGT','WMT','HD','LULU','CHWY',
+  // Energy / Industrial
+  'XOM','CVX','COP','BA','CAT','GE','RTX','LMT','NEE','ENPH',
+  // High-vol movers often on screens
+  'MSTR','IONQ','RKLB','LUNR','ACHR','JOBY','SOUN','BBAI','RGTI','QBTS'
 ];
-const MARKET_TICKERS = ['SPY','QQQ','IWM'];
+
+const DEFAULT_WATCHLIST = ['AAPL','MSFT','NVDA','TSLA','AMZN','META','PLTR','AMD'];
+const MARKET_TICKERS    = ['SPY','QQQ','IWM'];
 
 // ═══════════════════════════════════════════════════════════════════════════
 // STATE
@@ -547,7 +567,7 @@ const S = {
 
   quotes: {},           // ticker -> quote
   news: [],
-  picks: { top: [], hr: [] },
+  picks: { top: [], hr: [], wl: [] },
   activeTab: 'top',
   chart: { ticker: null, range: 'D', loaded: false },
   currentAnalysis: null,
@@ -589,9 +609,14 @@ function manualRefresh() {
 async function refresh(background = false) {
   setStatus('Fetching…', 'loading');
   try {
-    const symbols = [...new Set([...S.watchlist, ...MARKET_TICKERS])];
+    // Always fetch the full universe for Top 3 / High Reward scoring
+    const universeSymbols = [...new Set([...UNIVERSE, ...MARKET_TICKERS])];
+    // Watchlist may overlap universe — deduplicate
+    const watchlistOnly   = S.watchlist.filter(s => !universeSymbols.includes(s));
+    const allSymbols      = [...universeSymbols, ...watchlistOnly];
+
     const [quotesData, newsData] = await Promise.all([
-      fetchQuotes(symbols),
+      fetchQuotes(allSymbols),
       fetchNews(S.watchlist.slice(0, 5).join(','))
     ]);
 
@@ -601,7 +626,7 @@ async function refresh(background = false) {
 
     // Score & rank — runs in memory, no chart touch
     const spyChg = S.quotes['SPY'] ? S.quotes['SPY'].regularMarketChangePercent : null;
-    scoreAndRank(spyChg);
+    scoreAndRank(spyChg, S.watchlist);
 
     // Render data
     renderStats();
@@ -712,19 +737,30 @@ function scoreStock(q, spyChg) {
   return clamp(Math.round(score), 0, 100);
 }
 
-function scoreAndRank(spyChg) {
+function scoreAndRank(spyChg, watchlist) {
+  const ETF_SKIP = ['SPY','QQQ','IWM','DIA','VTI','GLD','TLT','SLV','USO'];
+
+  // Score every fetched quote
   const all = Object.values(S.quotes).map(q => ({
     ...q, _score: scoreStock(q, spyChg)
   }));
-  all.sort((a,b) => b._score - a._score);
+  all.sort((a, b) => b._score - a._score);
 
-  const nonEtf = all.filter(q => !['SPY','QQQ','IWM','DIA'].includes(q.symbol));
+  // Top 3 & High Reward — universe stocks only (no ETFs)
+  const universeSet = new Set(UNIVERSE);
+  const universe    = all.filter(q => universeSet.has(q.symbol) && !ETF_SKIP.includes(q.symbol));
 
-  S.picks.top = nonEtf.slice(0, 3).map((q,i) => buildPick(q, i+1));
-  S.picks.hr  = nonEtf
-    .filter(q => calcRR(q).rr >= 2.5 && q.regularMarketChangePercent > 0)
-    .slice(0, 6)
-    .map((q,i) => buildPick(q, i+1, true));
+  S.picks.top = universe.slice(0, 3).map((q, i) => buildPick(q, i + 1));
+  S.picks.hr  = universe
+    .filter(q => calcRR(q).rr >= 2.5 && (q.regularMarketChangePercent || 0) > 0)
+    .slice(0, 8)
+    .map((q, i) => buildPick(q, i + 1, true));
+
+  // Watchlist — show ALL user tickers with their live data + score
+  const wlSet = new Set((watchlist || []).map(s => s.toUpperCase()));
+  S.picks.wl  = all
+    .filter(q => wlSet.has(q.symbol))
+    .map((q, i) => buildPick(q, i + 1));
 }
 
 function calcRR(q) {
@@ -842,28 +878,41 @@ function buildReason(q) {
 // RENDER PICKS
 // ═══════════════════════════════════════════════════════════════════════════
 function renderPicks() {
-  const picks = S.activeTab === 'top' ? S.picks.top : S.picks.hr;
+  const picks = S.activeTab === 'top' ? S.picks.top
+              : S.activeTab === 'hr'  ? S.picks.hr
+              : S.picks.wl;
   const list  = document.getElementById('picks-list');
+
   if (!picks.length) {
-    list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--txt3);font-family:var(--font-mono);font-size:11px">No picks found</div>';
+    const msgs = {
+      top: 'Scanning universe…',
+      hr:  'No high-reward setups found yet',
+      wl:  'No watchlist data yet — add tickers via ☰ Watchlist'
+    };
+    list.innerHTML = `<div style="text-align:center;padding:30px;color:var(--txt3);font-family:var(--font-mono);font-size:11px">${msgs[S.activeTab]}</div>`;
     return;
   }
-  list.innerHTML = picks.map((p,i) => {
+
+  const cardClass = S.activeTab === 'wl' ? 'wl' : S.activeTab === 'hr' ? 'hr' : 'top';
+
+  list.innerHTML = picks.map((p, i) => {
     const chgClass  = p.change1D >= 0 ? 'up' : 'dn';
     const chgSign   = p.change1D >= 0 ? '+' : '';
     const scoreColor = p.score >= 70 ? 'var(--green)' : p.score >= 50 ? 'var(--yellow)' : 'var(--red)';
     const vrTag = p.volRatio > 2 ? `<span class="pick-tag good">🔥 ${p.volRatio.toFixed(1)}x vol</span>` :
                   p.volRatio > 1.3 ? `<span class="pick-tag">↑ vol</span>` : '';
+    // Watchlist: show score rank badge instead of sequential rank
+    const rankLabel = S.activeTab === 'wl'
+      ? `<span class="pick-rank" title="Score rank in your watchlist">#${i+1} WL</span>`
+      : `<span class="pick-rank">#${p.rank}</span>`;
     const active = S.chart.ticker === p.ticker ? ' active' : '';
     return `
-    <div class="pick-card${active} ${S.activeTab==='top'?'top':'hr'} fade-in"
-      onclick="selectPick('${p.ticker}')" style="animation-delay:${i*0.07}s">
+    <div class="pick-card${active} ${cardClass} fade-in"
+      onclick="selectPick('${p.ticker}')" style="animation-delay:${i*0.06}s">
       <div class="pick-row1">
         <span class="pick-ticker">${p.ticker}</span>
-        <span class="pick-rank">#${p.rank}</span>
-        <span style="margin-left:auto;font-size:10px;color:${scoreColor};font-family:var(--font-mono)">
-          ${p.score}/100
-        </span>
+        ${rankLabel}
+        <span style="margin-left:auto;font-size:10px;color:${scoreColor};font-family:var(--font-mono)">${p.score}/100</span>
       </div>
       <div class="pick-name">${p.name}</div>
       <div class="pick-price-row">
@@ -892,8 +941,9 @@ function renderPicksEmpty(msg) {
 
 function switchTab(tab) {
   S.activeTab = tab;
-  document.getElementById('tab-top').className = 'tab-btn' + (tab==='top' ? ' active-top' : '');
-  document.getElementById('tab-hr').className  = 'tab-btn' + (tab==='hr'  ? ' active-hr'  : '');
+  document.getElementById('tab-top').className = 'tab-btn' + (tab === 'top' ? ' active-top' : '');
+  document.getElementById('tab-hr').className  = 'tab-btn' + (tab === 'hr'  ? ' active-hr'  : '');
+  document.getElementById('tab-wl').className  = 'tab-btn' + (tab === 'wl'  ? ' active-wl'  : '');
   renderPicks();
 }
 
@@ -923,7 +973,10 @@ function renderStats() {
   document.getElementById('st-breadth').textContent     = `${ups}↑ ${dns}↓`;
   document.getElementById('st-breadth').className       = 'stat-val ' + (ups>dns?'up':'dn');
   document.getElementById('st-breadth-sub').textContent = `${Math.round(ups/(ups+dns||1)*100)}% positive`;
-  document.getElementById('st-count').textContent       = all.length;
+  const universeCount  = Object.keys(S.quotes).filter(s => UNIVERSE.includes(s)).length;
+  const wlCount        = S.watchlist.filter(s => S.quotes[s]).length;
+  document.getElementById('st-count').textContent     = universeCount;
+  document.getElementById('st-count-sub').textContent = `scanned · ${wlCount} watching`;
 
   if (spy) {
     const c = spy.regularMarketChangePercent || 0;
