@@ -344,7 +344,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
         <div class="settings-title">Data Source</div>
         <div class="form-group">
           <label class="form-label">Google Apps Script URL</label>
-          <input id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/…/exec"/>
+          <input id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/.../exec"/>
           <div class="form-hint">Deploy Code.gs as a web app (Anyone) and paste the URL here.</div>
         </div>
       </div>
@@ -408,7 +408,7 @@ const SECTOR_ETFS = {
 
 // ═══════════════════ STATE ═══════════════════
 const S = {
-  gasUrl: localStorage.getItem('gasUrl') || 'https://script.google.com/macros/s/AKfycbzh-Bk4vW_RD6hCoQ4C6LxRdkvmJ7947a8gmH3OfDqExC9SwzcSjmF3ulDiwV7vkT52/exec',
+  gasUrl: localStorage.getItem('gasUrl') || 'https://script.google.com/macros/s/AKfycbxUUoge01NBv4x3Ks9x--kyN_YpnlBXhbeUhpJ8-wbW7cH0RCOP9vp6ti8Q1d_HH_akwg/exec',
   apiKey: localStorage.getItem('apiKey') || '',
   refreshMs: parseInt(localStorage.getItem('refreshMs') || '300000'),
   watchlist: JSON.parse(localStorage.getItem('watchlist') || 'null') || [...DEFAULT_WL],
