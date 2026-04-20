@@ -108,7 +108,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 .pc-reason{font-size:8px;color:var(--txt3);margin-top:3px}
 .pc-bar{height:2px;background:var(--border);border-radius:1px;margin-top:5px}
 .pc-bar-fill{height:100%;border-radius:1px;transition:width .5s ease}
-.pc-alert{position:absolute;right:7px;top:7px;font-size:7px;font-family:var(--font-mono);padding:1px 4px;border-radius:2px;text-transform:uppercase;letter-spacing:.06em}
+.pc-alert{position:absolute;right:7px;top:22px;font-size:7px;font-family:var(--font-mono);padding:1px 4px;border-radius:2px;text-transform:uppercase;letter-spacing:.06em}
 .pc-alert.breakout{background:rgba(24,224,122,.12);color:var(--green);border:1px solid var(--green2)}
 .pc-alert.vol{background:rgba(255,122,48,.12);color:var(--orange);border:1px solid #7a3800}
 .pc-alert.setup{background:rgba(157,127,255,.12);color:var(--purple);border:1px solid var(--purple2)}
@@ -210,6 +210,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 .news-item{padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer}
 .news-item:last-child{border-bottom:none}
 .news-item:hover .news-title{color:var(--blue)}
+.news-title-link{display:block;color:inherit;text-decoration:none}
 .news-title{font-size:10px;color:var(--txt);line-height:1.4;margin-bottom:3px;transition:color .15s}
 .news-meta{font-size:8px;color:var(--txt3);font-family:var(--font-mono);display:flex;gap:6px;flex-wrap:wrap}
 .news-ticker{color:var(--yellow)}
@@ -217,6 +218,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 .ns-bull{color:var(--green);background:rgba(24,224,122,.1);border:1px solid var(--green2)}
 .ns-bear{color:var(--red);background:rgba(240,64,96,.1);border:1px solid var(--red2)}
 .ns-neu{color:var(--txt3);background:var(--bg3);border:1px solid var(--border)}
+.rp-subtitle{font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:var(--txt3);font-family:var(--font-mono);margin-bottom:6px}
 
 /* BOTTOM */
 #bottom-bar{padding:3px 12px;background:var(--bg);border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;font-size:8px;color:var(--txt3);font-family:var(--font-mono);height:22px;flex-shrink:0}
@@ -262,7 +264,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 
 @media(max-width:1000px){#right-panel{width:240px}#left-panel{width:260px}}
 @media(max-width:750px){#right-panel{width:100%}#left-panel{width:240px}}
-@media(max-width:520px){#main{flex-direction:column;height:auto;overflow:visible}html,body{overflow:auto}#center-panel{order:1;width:100%;height:72vh;min-height:72vh;border:none;border-bottom:1px solid var(--border)}#right-panel{order:2;width:100%;border-left:none;border-bottom:1px solid var(--border)}#left-panel{order:3;width:100%;height:auto;max-height:38vh;border-right:none;border-bottom:none}#chart-wrap{height:auto;min-height:calc(72vh - 124px);flex:1}#chart-header{align-items:flex-start}#search-wrap{width:100%;flex-wrap:wrap}#chart-search{width:calc(100vw - 170px);min-width:120px}.range-btns{width:100%;margin-left:0;justify-content:flex-start}#trade-bar{align-items:flex-start}}
+@media(max-width:520px){#main{flex-direction:column;height:auto;overflow:visible}html,body{overflow:auto}#center-panel{order:1;width:100%;height:78vh;min-height:78vh;border:none;border-bottom:1px solid var(--border)}#right-panel{order:2;width:100%;border-left:none;border-bottom:1px solid var(--border)}#left-panel{order:3;width:100%;height:auto;max-height:38vh;border-right:none;border-bottom:none}#chart-wrap{height:auto;min-height:calc(78vh - 124px);flex:1}#chart-header{align-items:flex-start}#search-wrap{width:100%;flex-wrap:wrap}#chart-search{width:calc(100vw - 170px);min-width:120px}.range-btns{width:100%;margin-left:0;justify-content:flex-start}#trade-bar{align-items:flex-start}}
 
 @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
 @keyframes glow{0%,100%{box-shadow:0 0 4px var(--green)}50%{box-shadow:0 0 10px var(--green)}}
@@ -404,6 +406,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
       </div>
       <div class="rp-view" id="rv-news">
         <div class="rp-title" style="margin-top:2px">📰 Headlines</div>
+        <div class="rp-subtitle">Selected Stock</div>
+        <div id="selected-stock-news" style="margin-bottom:12px"><div style="color:var(--txt3);font-size:10px;font-family:var(--font-mono)">Select a stock →</div></div>
+        <div class="rp-subtitle">All Headlines</div>
         <div id="news-filter" style="display:flex;gap:4px;margin-bottom:8px">
           <button class="tab-btn t-top" id="nf-all"  onclick="filterNews('all')">All</button>
           <button class="tab-btn"       id="nf-bull" onclick="filterNews('bull')">📈 Bull</button>
@@ -1157,40 +1162,37 @@ function calcMPS(spyChg) {
 function buildAlerts() {
   S.alerts = [];
   const allQ = Object.values(S.quotes).filter(q => !ETF_SKIP.includes(q.symbol));
-  // Volume spikes
-  allQ.filter(q => (q.regularMarketVolume||0)/(q.averageDailyVolume3Month||1) > 2.5 && Math.abs(q.regularMarketChangePercent||0) > 1)
-    .slice(0,6).forEach(q => {
-      const vr = ((q.regularMarketVolume)/(q.averageDailyVolume3Month)).toFixed(1);
-      const chg = q.regularMarketChangePercent||0;
-      S.alerts.push({ ticker:q.symbol, chg, label:vr+'x vol', type:chg>0?'bull':'bear', color:chg>0?'var(--green)':'var(--red)' });
-    });
-  // Big movers
-  allQ.filter(q => Math.abs(q.regularMarketChangePercent||0) > 4)
-    .sort((a,b) => Math.abs(b.regularMarketChangePercent||0)-Math.abs(a.regularMarketChangePercent||0))
-    .slice(0,4).forEach(q => {
-      const chg = q.regularMarketChangePercent||0;
-      S.alerts.push({ ticker:q.symbol, chg, label:(chg>0?'+':'')+fmt2(chg)+'%', type:chg>0?'bull':'bear', color:chg>0?'var(--green)':'var(--red)' });
-    });
-  // 52wk highs
-  allQ.filter(q => q.regularMarketPrice >= (q.fiftyTwoWeekHigh||0)*0.995 && (q.regularMarketChangePercent||0) > 0 && q.fiftyTwoWeekHigh)
-    .slice(0,3).forEach(q => {
-      S.alerts.push({ ticker:q.symbol, chg:q.regularMarketChangePercent||0, label:'52wk HIGH', type:'breakout', color:'var(--cyan)' });
+  allQ
+    .filter(q => Math.abs(q.regularMarketChangePercent || 0) >= 3)
+    .sort((a, b) => Math.abs(b.regularMarketChangePercent || 0) - Math.abs(a.regularMarketChangePercent || 0))
+    .slice(0, 20)
+    .forEach(q => {
+      const chg = q.regularMarketChangePercent || 0;
+      S.alerts.push({
+        ticker: q.symbol,
+        chg,
+        label: `${chg >= 0 ? '+' : ''}${fmt2(chg)}%`,
+        type: chg >= 0 ? 'bull' : 'bear',
+        color: chg >= 0 ? 'var(--green)' : 'var(--red)'
+      });
     });
 }
 
 function renderAlertBar() {
-  if (!S.alerts.length) return;
-  const items = [...S.alerts, ...S.alerts, ...S.alerts]; // triple-copy for seamless loop
   const el = document.getElementById('alert-scroll');
+  if (!S.alerts.length) {
+    el.innerHTML = '<div class="alert-item" style="color:var(--txt3)"><span>No ±3% moves yet</span></div>';
+    el.style.animation = 'none';
+    return;
+  }
+  const items = [...S.alerts, ...S.alerts, ...S.alerts];
   el.innerHTML = items.map(a => {
-    const tagBg = a.type==='bull'?'rgba(24,224,122,.15)':a.type==='bear'?'rgba(240,64,96,.15)':'rgba(0,212,255,.15)';
-    const tagBorder = a.type==='bull'?'var(--green2)':a.type==='bear'?'var(--red2)':'var(--cyan2)';
     return `<div class="alert-item" onclick="selectPick('${a.ticker}')">
       <span style="color:${a.color};font-weight:600">${a.ticker}</span>
-      <span class="al-tag" style="background:${tagBg};border:1px solid ${tagBorder};color:${a.color}">${a.label}</span>
+      <span class="al-tag" style="background:${a.type==='bull'?'rgba(24,224,122,.15)':'rgba(240,64,96,.15)'};border:1px solid ${a.type==='bull'?'var(--green2)':'var(--red2)'};color:${a.color}">${a.label}</span>
     </div>`;
   }).join('');
-  const speed = Math.max(22, 12 + S.alerts.length * 3);
+  const speed = Math.max(24, 14 + S.alerts.length * 2.5);
   el.style.animation = `scrollLeft ${speed}s linear infinite`;
 }
 
@@ -1415,21 +1417,32 @@ function loadChart(ticker) {
   lbl.textContent = ticker;
   lbl.style.color = 'var(--txt)';
   document.querySelectorAll('.range-btn').forEach(b => b.classList.toggle('active', b.dataset.range === S.chart.range));
+
+  const renderQuote = (q) => {
+    if (!q) return;
+    const c = q.regularMarketChangePercent || 0;
+    document.getElementById('chart-price-lbl').innerHTML = `<span style="color:${c>=0?'var(--green)':'var(--red)'}">$${fmt2(q.regularMarketPrice)} ${c>=0?'+':''}${fmt2(c)}%</span>`;
+    const vr = (q.regularMarketVolume || 0) / (q.averageDailyVolume3Month || 1);
+    const wkH = q.fiftyTwoWeekHigh || q.regularMarketPrice;
+    const wkL = q.fiftyTwoWeekLow || 0;
+    const wkPos = (wkH - wkL) > 0 ? Math.round(((q.regularMarketPrice - wkL) / (wkH - wkL)) * 100) : '—';
+    const name = q.longName || q.shortName || TICKER_NAMES[ticker] || ticker;
+    document.getElementById('chart-detail').innerHTML = `<span style="color:var(--txt2)">${name}</span><span>Vol: ${vr.toFixed(1)}x avg</span><span>52wk pos: ${wkPos}%</span><span>${guessSector(ticker)}</span>`;
+  };
+
   const q = S.quotes[ticker];
   if (q) {
-    const c = q.regularMarketChangePercent||0;
-    document.getElementById('chart-price-lbl').innerHTML = `<span style="color:${c>=0?'var(--green)':'var(--red)'}">$${fmt2(q.regularMarketPrice)} ${c>=0?'+':''}${fmt2(c)}%</span>`;
-    const vr = (q.regularMarketVolume||0)/(q.averageDailyVolume3Month||1);
-    const wkH = q.fiftyTwoWeekHigh||q.regularMarketPrice, wkL = q.fiftyTwoWeekLow||0;
-    const wkPos = (wkH-wkL)>0?((q.regularMarketPrice-wkL)/(wkH-wkL)*100).toFixed(0):'—';
-    const name = q.longName||q.shortName||TICKER_NAMES[ticker]||ticker;
-    document.getElementById('chart-detail').innerHTML = `<span style="color:var(--txt2)">${name}</span><span>Vol: ${vr.toFixed(1)}x avg</span><span>52wk pos: ${wkPos}%</span><span>${guessSector(ticker)}</span>`;
+    renderQuote(q);
   } else {
-    const name = TICKER_NAMES[ticker] || '';
-    document.getElementById('chart-price-lbl').innerHTML = `<span style="color:var(--txt3);font-size:10px">Quote pending</span>`;
-    document.getElementById('chart-detail').innerHTML = name
-      ? `<span style="color:var(--txt2)">${name}</span><span>Waiting for live data</span>`
-      : `<span style="color:var(--txt3)">Waiting for live data</span>`;
+    const name = TICKER_NAMES[ticker] || ticker;
+    document.getElementById('chart-price-lbl').innerHTML = `<span style="color:var(--txt3);font-size:10px">Fetching live quote…</span>`;
+    document.getElementById('chart-detail').innerHTML = `<span style="color:var(--txt2)">${name}</span><span>Waiting for live data</span>`;
+    if (S.gasUrl) {
+      fetchSpecific([ticker]).then(extra => {
+        extra.forEach(qx => { S.quotes[qx.symbol] = qx; });
+        if (S.chart.ticker === ticker) renderQuote(S.quotes[ticker]);
+      }).catch(() => {});
+    }
   }
 }
 function setRange(range) {
@@ -1486,13 +1499,34 @@ function updateTradeDisplay(ticker) {
 // ════════════════════════════════════════════════════════
 function triggerAnalysis(ticker) {
   const q = S.quotes[ticker];
-  const news = S.allNews.filter(n => !n.ticker||n.ticker===ticker).slice(0,5);
+  const news = S.allNews.filter(n => !n.ticker || n.ticker === ticker).slice(0, 5);
+  S.currentNews = news;
+  renderSelectedStockNews();
   if (q) {
     const a = getRuleBasedAnalysis(q, news);
-    S.currentAnalysis = a; S.currentNews = news;
+    S.currentAnalysis = a;
     renderAnalysis(a);
     document.getElementById('ai-get-btn').style.display = S.apiKey ? 'block' : 'none';
   }
+}
+
+function renderSelectedStockNews() {
+  const el = document.getElementById('selected-stock-news');
+  if (!el) return;
+  const ticker = S.chart.ticker;
+  const items = (S.currentNews || []).filter(n => !ticker || !n.ticker || n.ticker === ticker);
+  if (!ticker) {
+    el.innerHTML = '<div style="color:var(--txt3);font-size:10px;font-family:var(--font-mono)">Select a stock →</div>';
+    return;
+  }
+  if (!items.length) {
+    el.innerHTML = '<div style="color:var(--txt3);font-size:10px;font-family:var(--font-mono)">No selected-stock headlines</div>';
+    return;
+  }
+  el.innerHTML = items.map(a => {
+    const href = esc(a.link || '#');
+    return `<div class="news-item"><a class="news-title-link" href="${href}" target="_blank" rel="noopener noreferrer"><div class="news-title">${esc(a.title)}</div></a><div class="news-meta">${a.source ? `<span>${esc(a.source)}</span>` : ''}${a.pubDate ? `<span>${fmtNewsTime(a.pubDate)}</span>` : ''}</div></div>`;
+  }).join('');
 }
 
 function getRuleBasedAnalysis(q, news) {
@@ -1650,33 +1684,37 @@ function sentimentScore(title) {
 }
 
 function filterNews(f) {
-  S.newsFilter=f;
-  ['all','bull','bear'].forEach(x => {
-    const btn=document.getElementById('nf-'+x);
-    if(!btn)return;
-    btn.className='tab-btn'+(x===f?(f==='bear'?' t-hr':' t-top'):'');
+  S.newsFilter = f;
+  ['all', 'bull', 'bear'].forEach(x => {
+    const btn = document.getElementById('nf-' + x);
+    if (!btn) return;
+    btn.className = 'tab-btn' + (x === f ? (f === 'bear' ? ' t-hr' : ' t-top') : '');
   });
   renderNews(S.allNews);
 }
 
 function renderNews(articles) {
-  const el=document.getElementById('news-list');
-  if(!articles||!articles.length){el.innerHTML='<div style="color:var(--txt3);font-size:10px">No headlines</div>';return;}
-  // Sort newest first
-  let filtered=articles
-    .map(a=>({...a,_sent:sentimentScore(a.title),_ts:a.pubDate?new Date(a.pubDate).getTime():0}))
-    .sort((a,b)=>b._ts-a._ts);
-  if(S.newsFilter==='bull') filtered=filtered.filter(a=>a._sent==='bull');
-  if(S.newsFilter==='bear') filtered=filtered.filter(a=>a._sent==='bear');
-  if(!filtered.length){el.innerHTML='<div style="color:var(--txt3);font-size:10px">No matching headlines</div>';return;}
-  el.innerHTML=filtered.slice(0,15).map(a => {
-    const time=a.pubDate?fmtNewsTime(a.pubDate):'';
-    const sc=a._sent==='bull'?'ns-bull':a._sent==='bear'?'ns-bear':'ns-neu';
-    const sl=a._sent==='bull'?'↑':a._sent==='bear'?'↓':'·';
-    return `<div class="news-item" onclick="window.open('${esc(a.link)}','_blank')">
-      <div class="news-title">${esc(a.title)}</div>
-      <div class="news-meta">${a.ticker?`<span class="news-ticker">${a.ticker}</span>`:''}<span>${esc(a.source||'')}</span>${time?`<span>${time}</span>`:''}<span class="news-sent ${sc}">${sl}</span></div>
-    </div>`;
+  const el = document.getElementById('news-list');
+  if (!el) return;
+  if (!articles || !articles.length) {
+    el.innerHTML = '<div style="color:var(--txt3);font-size:10px;font-family:var(--font-mono)">No headlines</div>';
+    return;
+  }
+  let filtered = articles
+    .map(a => ({ ...a, _sent: sentimentScore(a.title), _ts: a.pubDate ? new Date(a.pubDate).getTime() : 0 }))
+    .sort((a, b) => b._ts - a._ts);
+  if (S.newsFilter === 'bull') filtered = filtered.filter(a => a._sent === 'bull');
+  if (S.newsFilter === 'bear') filtered = filtered.filter(a => a._sent === 'bear');
+  if (!filtered.length) {
+    el.innerHTML = '<div style="color:var(--txt3);font-size:10px;font-family:var(--font-mono)">No matching headlines</div>';
+    return;
+  }
+  el.innerHTML = filtered.slice(0, 15).map(a => {
+    const time = a.pubDate ? fmtNewsTime(a.pubDate) : '';
+    const sc = a._sent === 'bull' ? 'ns-bull' : a._sent === 'bear' ? 'ns-bear' : 'ns-neu';
+    const sl = a._sent === 'bull' ? '↑' : a._sent === 'bear' ? '↓' : '·';
+    const href = esc(a.link || '#');
+    return `<div class="news-item"><a class="news-title-link" href="${href}" target="_blank" rel="noopener noreferrer"><div class="news-title">${esc(a.title)}</div></a><div class="news-meta">${a.ticker ? `<span class="news-ticker">${a.ticker}</span>` : ''}<span>${esc(a.source || '')}</span>${time ? `<span>${time}</span>` : ''}<span class="news-sent ${sc}">${sl}</span></div></div>`;
   }).join('');
 }
 
