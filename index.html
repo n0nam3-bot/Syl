@@ -250,6 +250,16 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 #toast.ok{border-color:var(--green2);color:var(--green)}
 #toast.err{border-color:var(--red2);color:var(--red)}
 
+/* SETUP BANNER */
+#setup-banner{display:none;align-items:center;gap:10px;padding:8px 14px;background:rgba(240,184,48,.07);border-bottom:1px solid var(--yellow2);font-size:11px;flex-wrap:wrap;flex-shrink:0}
+#sb-msg{color:var(--yellow);flex:1;min-width:0;font-family:var(--font-mono);font-size:10px}
+#init-sheet-btn{background:rgba(24,224,122,.1);border:1px solid var(--green2);color:var(--green);font-family:var(--font-mono);font-size:10px;padding:4px 10px;border-radius:var(--r);cursor:pointer;flex-shrink:0;transition:all .15s}
+#init-sheet-btn:hover{background:rgba(24,224,122,.2)}
+#init-sheet-btn:disabled{opacity:.5;cursor:not-allowed}
+#setup-wait{display:none;font-size:9px;color:var(--txt3);font-family:var(--font-mono)}
+#setup-howto{font-size:9px;color:var(--txt3);font-family:var(--font-mono);cursor:pointer;text-decoration:underline dotted}
+#setup-howto:hover{color:var(--txt2)}
+
 @media(max-width:1000px){#right-panel{width:240px}#left-panel{width:260px}}
 @media(max-width:750px){#right-panel{display:none}#left-panel{width:240px}}
 @media(max-width:520px){#main{flex-direction:column;height:auto;overflow:auto}html,body{overflow:auto}#left-panel,#center-panel{width:100%;height:auto;border:none;border-bottom:1px solid var(--border)}#left-panel{height:320px}#chart-wrap{height:260px}}
@@ -265,8 +275,11 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 <body>
 
 <div id="header">
-  <div class="logo">📈 <span style="color:var(--txt);font-weight:500">Market</span>Tracker <span>· Daily Picks</span></div>
-  <div id="status-dot" class="loading"></div>
+  <div class="logo">
+    <div class="logo-mark">📈</div>
+    Market<span style="color:var(--green)">Tracker</span>
+    <span style="color:var(--txt3);font-weight:300;font-size:10px">· Daily Picks</span>
+  </div>
   <div id="live-badge"><div id="live-dot" class="loading"></div><span id="live-txt">Starting…</span></div>
   <div id="mps-wrap">
     <span id="mps-lbl">MPS</span>
@@ -287,6 +300,14 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
       <div class="alert-item" style="color:var(--txt3)"><span>Scanning market universe…</span></div>
     </div>
   </div>
+</div>
+
+<div id="setup-banner">
+  <span style="font-size:16px">⚠️</span>
+  <span id="sb-msg">No Google Apps Script URL configured.</span>
+  <span id="setup-howto" onclick="showSettings()">How to set up →</span>
+  <button id="init-sheet-btn" onclick="initDataSheet()">▶ Initialize Data Sheet</button>
+  <span id="setup-wait">⟳ Populating… auto-refreshing in ~70s</span>
 </div>
 
 <div id="statbar">
@@ -446,11 +467,18 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
         </div>
       </div>
       <div class="ss-sec">
-        <div class="ss-title">Google Apps Script URL</div>
+        <div class="ss-title">📊 Google Apps Script (Required for data)</div>
         <div class="fg">
           <label class="fl">GAS Web App URL</label>
           <input id="gas-url-input" type="text" class="fi" placeholder="https://script.google.com/macros/s/…/exec"/>
-          <div class="fh">Deploy Code.gs as Web App → Anyone, even anonymous. Paste URL here.</div>
+          <div class="fh" style="line-height:1.8">
+            <strong style="color:var(--txt2)">First-time setup:</strong><br>
+            1. Go to <a href="https://script.google.com" target="_blank" style="color:var(--blue)">script.google.com</a> → New project<br>
+            2. Paste the <strong>Code.gs</strong> file contents → change <code>SS_ID</code> to your Google Sheet ID<br>
+            3. Deploy → New deployment → Web App → Execute as: <em>Me</em> → Access: <em>Anyone</em><br>
+            4. Copy the <code>/exec</code> URL here → Save → click <strong>Initialize Data Sheet</strong><br>
+            5. Wait ~60 seconds for GOOGLEFINANCE to populate, then Refresh
+          </div>
         </div>
       </div>
     </div>
@@ -714,7 +742,7 @@ const SECTOR_MAP = {
 // STATE
 // ════════════════════════════════════════════════════════
 const S = {
-  gasUrl:   localStorage.getItem('gasUrl')   || 'https://script.google.com/macros/s/AKfycbwTI5A38drGKLrsUwx-6pSAzPkCpFkoXT-zCpTBlr_CF0YyPxiYD7I-gP2ta0fc8p-6/exec',
+  gasUrl:   localStorage.getItem('gasUrl')   || 'https://script.google.com/macros/s/AKfycbww7FOVnE_DaNLhTZk9h9J_KP8349xBLuLdPm2KiSAhQGFb2BMdXncDatPSyqOj2eD5/exec',
   apiKey:   localStorage.getItem('apiKey')   || '',
   refreshMs:parseInt(localStorage.getItem('refreshMs') || '300000'),
   watchlist:JSON.parse(localStorage.getItem('watchlist') || 'null') || [...DEFAULT_WL],
@@ -738,6 +766,38 @@ function applySettings() {
 }
 
 // ════════════════════════════════════════════════════════
+// CACHE — survive page reloads, show data instantly
+// ════════════════════════════════════════════════════════
+const CACHE_KEY  = 'mp_quotes_v3';
+const NEWS_KEY   = 'mp_news_v3';
+const CACHE_TTL  = 5 * 60 * 1000;   // 5 min — show as "live"
+const CACHE_STALE= 30 * 60 * 1000;  // 30 min — show as stale but usable
+
+function saveCache(quotes, news) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ data: quotes, ts: Date.now() }));
+    if (news) localStorage.setItem(NEWS_KEY, JSON.stringify({ data: news, ts: Date.now() }));
+  } catch(e) {}
+}
+function loadCache() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw);
+    const age = Date.now() - ts;
+    return { data, age, fresh: age < CACHE_TTL, stale: age > CACHE_STALE };
+  } catch(e) { return null; }
+}
+function loadNewsCache() {
+  try {
+    const raw = localStorage.getItem(NEWS_KEY);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw);
+    return { data, age: Date.now() - ts };
+  } catch(e) { return null; }
+}
+
+// ════════════════════════════════════════════════════════
 // REFRESH
 // ════════════════════════════════════════════════════════
 function startAutoRefresh() {
@@ -748,32 +808,66 @@ function startAutoRefresh() {
 function manualRefresh() { refresh(false); }
 
 async function refresh(background=false) {
-  setStatus('Fetching…', 'loading');
-  try {
-    const universeSyms = [...new Set([...UNIVERSE, ...MKT_TICKERS])];
-    const wlOnly = S.watchlist.filter(s => !universeSyms.includes(s));
-    const allSyms = [...universeSyms, ...wlOnly];
+  // 1. Show cached data immediately (zero-wait UX)
+  const cached = loadCache();
+  if (cached && !cached.stale && Object.keys(S.quotes).length === 0) {
+    cached.data.forEach(q => { S.quotes[q.symbol] = q; });
+    const cachedNews = loadNewsCache();
+    if (cachedNews) S.allNews = cachedNews.data;
+    const spyChg = S.quotes['SPY'] ? S.quotes['SPY'].regularMarketChangePercent : null;
+    scoreAndRank(spyChg, S.watchlist);
+    calcSectorPerf(); calcMPS(spyChg); buildAlerts();
+    renderStats(); renderPicks(); renderAlertBar();
+    renderSectorHeatmap(); renderMarketOverview();
+    if (cachedNews) renderNews(cachedNews.data);
+    const ageMin = Math.round(cached.age / 60000);
+    setStatus(`Cached ${ageMin}m ago — refreshing…`, 'loading');
+  }
 
+  // 2. No GAS URL configured → show setup guide
+  if (!S.gasUrl) {
+    showSetupBanner(true);
+    setStatus('Setup required', 'err');
+    return;
+  }
+
+  setStatus('Fetching live data…', 'loading');
+  try {
+    // Single request for all quotes (no URL-length issues, no batching needed)
     const [quotesData, newsData] = await Promise.all([
-      fetchQuotes(allSyms),
-      fetchNews(S.watchlist.slice(0,5).join(','))
+      fetchAllQuotes(),
+      fetchNews(S.watchlist.slice(0, 5).join(','))
     ]);
 
+    if (!quotesData.length && !cached) {
+      // Sheet not populated yet
+      showSetupBanner(false);
+      setStatus('No data — sheet may still be loading', 'err');
+      return;
+    }
+
+    hideSetupBanner();
     quotesData.forEach(q => { S.quotes[q.symbol] = q; });
     S.allNews = newsData;
+    saveCache(quotesData, newsData);
+
+    // Merge watchlist tickers not in universe (fetch on-demand if needed)
+    const wlMissing = S.watchlist.filter(s => !S.quotes[s]);
+    if (wlMissing.length && S.gasUrl) {
+      fetchSpecific(wlMissing).then(extra => {
+        extra.forEach(q => { S.quotes[q.symbol] = q; });
+        if (S.chart.ticker && extra.find(q => q.symbol === S.chart.ticker)) {
+          updateTradeDisplay(S.chart.ticker);
+        }
+      });
+    }
 
     const spyChg = S.quotes['SPY'] ? S.quotes['SPY'].regularMarketChangePercent : null;
     scoreAndRank(spyChg, S.watchlist);
-    calcSectorPerf();
-    calcMPS(spyChg);
-    buildAlerts();
+    calcSectorPerf(); calcMPS(spyChg); buildAlerts();
 
-    renderStats();
-    renderPicks();
-    renderAlertBar();
-    renderSectorHeatmap();
-    renderMarketOverview();
-    renderNews(newsData);
+    renderStats(); renderPicks(); renderAlertBar();
+    renderSectorHeatmap(); renderMarketOverview(); renderNews(newsData);
 
     if (S.chart.ticker && S.quotes[S.chart.ticker]) {
       updateTradeDisplay(S.chart.ticker);
@@ -785,19 +879,41 @@ async function refresh(background=false) {
     document.getElementById('last-t').textContent = fmtTime(now);
     if (S.refreshMs) document.getElementById('next-t').textContent = fmtTime(new Date(now.getTime() + S.refreshMs));
     document.getElementById('sync-lbl').textContent = 'synced ' + fmtTime(now);
-    setStatus('Live', 'live');
+
+    const populated = quotesData.filter(q => q.regularMarketPrice > 0).length;
+    setStatus(`Live · ${populated} stocks`, 'live');
+
   } catch(err) {
     console.error(err);
-    setStatus('Error: ' + err.message.slice(0,30), 'err');
+    if (cached) {
+      setStatus('Network error — showing cached data', 'err');
+    } else {
+      setStatus('Error: ' + err.message.slice(0, 35), 'err');
+      showSetupBanner(false);
+    }
   }
 }
 
-async function fetchQuotes(symbols) {
+// Single call that gets ALL quotes from the GOOGLEFINANCE sheet at once
+async function fetchAllQuotes() {
   if (!S.gasUrl) return [];
-  const res = await fetch(S.gasUrl + '?action=quotes&symbols=' + symbols.join(','));
+  const res = await fetch(S.gasUrl + '?action=allquotes&_=' + Date.now());
+  if (!res.ok) throw new Error('HTTP ' + res.status);
   const data = await res.json();
-  return (data && data.quoteResponse && data.quoteResponse.result) || [];
+  if (data.error) throw new Error(data.message || 'GAS error');
+  return (data.quoteResponse && data.quoteResponse.result) || [];
 }
+
+// Fetch specific tickers on-demand (watchlist / search)
+async function fetchSpecific(symbols) {
+  if (!S.gasUrl || !symbols.length) return [];
+  try {
+    const res = await fetch(S.gasUrl + '?action=quotes&symbols=' + symbols.slice(0,30).join(','));
+    const data = await res.json();
+    return (data.quoteResponse && data.quoteResponse.result) || [];
+  } catch { return []; }
+}
+
 async function fetchNews(symsStr) {
   if (!S.gasUrl) return [];
   try {
@@ -805,6 +921,41 @@ async function fetchNews(symsStr) {
     const data = await res.json();
     return (data && data.articles) || [];
   } catch { return []; }
+}
+
+// Initialize the GOOGLEFINANCE sheet (one-time setup)
+async function initDataSheet() {
+  if (!S.gasUrl) { toast('Enter your GAS URL in Settings first', 'err'); return; }
+  const btn = document.getElementById('init-sheet-btn');
+  if (btn) { btn.textContent = '⟳ Initializing…'; btn.disabled = true; }
+  setStatus('Creating sheet…', 'loading');
+  try {
+    const res = await fetch(S.gasUrl + '?action=setup');
+    const data = await res.json();
+    if (data.ok) {
+      toast(`Sheet created with ${data.tickers} tickers. Wait 60s then Refresh.`, 'ok');
+      setStatus('Sheet created — wait 60s then Refresh', 'live');
+      document.getElementById('setup-wait').style.display = 'block';
+      setTimeout(() => { refresh(); }, 70000); // auto-refresh after 70s
+    } else {
+      toast('Setup failed: ' + (data.message || 'unknown error'), 'err');
+      setStatus('Setup failed', 'err');
+    }
+  } catch(err) {
+    toast('Could not reach GAS: ' + err.message, 'err');
+    setStatus('Cannot connect to GAS', 'err');
+  }
+  if (btn) { btn.textContent = '▶ Initialize Data Sheet'; btn.disabled = false; }
+}
+
+function showSetupBanner(noUrl) {
+  document.getElementById('setup-banner').style.display = 'flex';
+  document.getElementById('sb-msg').textContent = noUrl
+    ? 'No Google Apps Script URL configured. Add it in ⚙ Settings.'
+    : 'Sheet has no data yet — click Initialize to populate it.';
+}
+function hideSetupBanner() {
+  document.getElementById('setup-banner').style.display = 'none';
 }
 
 // ════════════════════════════════════════════════════════
@@ -1165,10 +1316,8 @@ async function loadChartFromSearch() {
   if (!S.quotes[v] && S.gasUrl) {
     setStatus('Fetching ' + v + '…', 'loading');
     try {
-      const res = await fetch(S.gasUrl + '?action=quotes&symbols=' + v);
-      const data = await res.json();
-      const results = (data && data.quoteResponse && data.quoteResponse.result) || [];
-      results.forEach(q => { S.quotes[q.symbol] = q; });
+      const extra = await fetchSpecific([v]);
+      extra.forEach(q => { S.quotes[q.symbol] = q; });
     } catch(e) { console.warn('On-demand fetch failed', e); }
     setStatus('Live', 'live');
   }
