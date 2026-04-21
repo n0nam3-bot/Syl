@@ -1702,8 +1702,8 @@ HOLD: [suggested hold period]`;
 // MARKET + NEWS
 // ════════════════════════════════════════════════════════
 function renderMarketOverview() {
-  const lbls={SPY:'S&P 500',QQQ:'Nasdaq 100',IWM:'Russell 2000'};
-  document.getElementById('market-overview').innerHTML = ['SPY','QQQ','IWM'].map(sym => {
+  const lbls={SPY:'S&P 500',VOO:'Vanguard S&P 500',QQQ:'Nasdaq 100',IWM:'Russell 2000'};
+  document.getElementById('market-overview').innerHTML = ['SPY','VOO','QQQ','IWM'].map(sym => {
     const q=S.quotes[sym]; if(!q)return'';
     const c=q.regularMarketChangePercent||0, cls=c>=0?'up':'dn';
     const wkH=q.fiftyTwoWeekHigh||q.regularMarketPrice, wkL=q.fiftyTwoWeekLow||0;
@@ -1811,7 +1811,6 @@ async function accountApi(action, payload={}) {
   if (!S.gasUrl) throw new Error('Set your Google Apps Script URL first');
   const res = await fetch(S.gasUrl, {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ action, ...payload })
   });
   const data = await res.json();
