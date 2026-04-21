@@ -49,7 +49,6 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 .hbtn:hover{border-color:var(--blue);color:var(--blue)}
 .hbtn.primary{border-color:var(--green2);color:var(--green);background:rgba(24,224,122,.06)}
 .hbtn.primary:hover{background:rgba(24,224,122,.14)}
-.mobile-dash-btn{display:none}
 
 /* ALERT BAR */
 #alert-bar{height:26px;background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;display:flex;align-items:center;position:relative}
@@ -269,6 +268,34 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 .mob-nav-icon{font-size:18px;line-height:1}
 .mob-nav-label{font-size:8px;letter-spacing:.04em}
 
+/* DASHBOARD PANEL — mobile only */
+#dash-panel{flex-direction:column;overflow-y:auto;background:var(--bg)}
+
+/* Dashboard sections */
+.dp-section{padding:10px 12px;border-bottom:1px solid var(--border)}
+.dp-section-title{font-size:8px;text-transform:uppercase;letter-spacing:.12em;color:var(--txt3);font-family:var(--font-mono);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.dp-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Dashboard alert scroll (same style as main alert bar) */
+#dp-alert-bar{height:30px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:flex;align-items:center;position:relative;margin-bottom:2px}
+#dp-alert-bar::before,#dp-alert-bar::after{content:'';position:absolute;top:0;bottom:0;width:30px;z-index:2;pointer-events:none}
+#dp-alert-bar::before{left:0;background:linear-gradient(to right,var(--bg3),transparent)}
+#dp-alert-bar::after{right:0;background:linear-gradient(to left,var(--bg3),transparent)}
+#dp-alert-scroll{display:flex;align-items:center;height:100%;white-space:nowrap;width:max-content;will-change:transform;animation:scrollLeft 34s linear infinite}
+
+/* Dashboard stat grid */
+#dp-stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.dp-stat{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:7px 9px}
+.dp-stat-lbl{font-size:7px;text-transform:uppercase;letter-spacing:.1em;color:var(--txt3);margin-bottom:2px;font-family:var(--font-mono)}
+.dp-stat-val{font-family:var(--font-mono);font-size:13px;font-weight:600}
+.dp-stat-sub{font-size:8px;color:var(--txt3);font-family:var(--font-mono);margin-top:1px}
+
+/* Dashboard sector chips row */
+#dp-sectors{display:flex;gap:5px;flex-wrap:wrap}
+
+/* Dashboard market rows */
+#dp-market{}
+
 /* ══ TABLET ════════════════════════════════════════════════════ */
 @media(max-width:1000px){
   #right-panel{width:240px}
@@ -295,32 +322,24 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   #time-wrap{display:none}
   #live-badge{padding:2px 5px}
   .hbtn{font-size:9px;padding:3px 6px}
-  .mobile-dash-btn{display:inline-flex;align-items:center;justify-content:center;flex:1;min-width:0}
-  /* Hide Settings/Account/Watchlist text labels on tiny screens, keep Refresh */
-  .hbtn:not(.primary):not(.mobile-dash-btn){display:none}
+  /* Hide non-primary header buttons on mobile — use nav instead */
+  .hbtn:not(.primary){display:none}
 
-  /* Compact alert bar */
-  #alert-bar{height:22px}
-  #alert-lbl{font-size:8px;padding:0 7px}
-  .alert-item{font-size:9px;padding:0 8px}
+  /* Hide alert bar and statbar — shown in Dashboard panel instead */
+  #alert-bar{display:none !important}
+  #statbar{display:none !important}
+  #setup-banner{font-size:9px}
 
-  /* Compact stat bar */
-  #statbar{height:42px;flex-wrap:nowrap}
-  .stat-cell{min-width:64px;padding:4px 8px}
-  .stat-val{font-size:11px}
-  .stat-lbl{font-size:7px}
-  .stat-sub{font-size:8px}
-
-  /* Main container: full height minus nav */
+  /* Main container: full height minus header + nav */
   #main{
     display:block;
-    height:calc(100dvh - 42px - 22px - 42px - var(--mob-nav-h));
+    height:calc(100dvh - 42px - var(--mob-nav-h));
     overflow:hidden;
     position:relative;
   }
 
   /* All panels: absolute, fill container, hidden by default */
-  #left-panel,#center-panel,#right-panel{
+  #left-panel,#center-panel,#right-panel,#dash-panel{
     position:absolute;inset:0;
     width:100% !important;height:100% !important;
     border:none !important;
@@ -331,6 +350,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   #left-panel.mob-active{display:flex}
   #center-panel.mob-active{display:flex}
   #right-panel.mob-active{display:flex}
+  #dash-panel.mob-active{display:flex}
 
   /* Chart panel adjustments */
   #chart-header{padding:6px 8px;gap:5px;flex-wrap:wrap;align-items:flex-start}
@@ -388,17 +408,14 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 @media(max-width:900px) and (max-height:480px){
   :root{--mob-nav-h:44px}
   #header{height:36px;padding:4px 8px;gap:5px}
-  #alert-bar{height:20px}
-  #statbar{height:32px}
-  .stat-cell{padding:3px 7px;min-width:55px}
-  .stat-val{font-size:10px}
-  .stat-sub{display:none}
-  .mobile-dash-btn{display:inline-flex;align-items:center;justify-content:center;flex:1;min-width:0}
-  #main{height:calc(100dvh - 36px - 20px - 32px - var(--mob-nav-h));display:block;overflow:hidden;position:relative}
-  #left-panel,#center-panel,#right-panel{position:absolute;inset:0;width:100% !important;height:100% !important;border:none !important;display:none;flex-direction:column}
+  #alert-bar{display:none !important}
+  #statbar{display:none !important}
+  #main{height:calc(100dvh - 36px - var(--mob-nav-h));display:block;overflow:hidden;position:relative}
+  #left-panel,#center-panel,#right-panel,#dash-panel{position:absolute;inset:0;width:100% !important;height:100% !important;border:none !important;display:none;flex-direction:column}
   #left-panel.mob-active{display:flex}
   #center-panel.mob-active{display:flex}
   #right-panel.mob-active{display:flex}
+  #dash-panel.mob-active{display:flex}
   #chart-header{padding:4px 8px;gap:4px}
   .range-btn{padding:3px 4px;font-size:8px}
   #sector-wrap{height:26px;padding:2px 6px}
@@ -409,6 +426,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   .mob-nav-icon{font-size:15px}
   .mob-nav-label{font-size:7px}
   #toast{bottom:calc(44px + 6px)}
+  .hbtn:not(.primary){display:none}
+  #mps-wrap{display:none}
+  #time-wrap{display:none}
 }
 
 @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
@@ -427,7 +447,6 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     Market<span style="color:var(--green)">Tracker</span>
     <span class="logo-text-sub" style="color:var(--txt3);font-weight:300;font-size:10px">· Daily Picks</span>
   </div>
-  <button class="hbtn primary mobile-dash-btn" onclick="switchMobilePanel('picks')">🏠 Dashboard</button>
   <div id="live-badge"><div id="live-dot" class="loading"></div><span id="live-txt">Starting…</span></div>
   <div id="mps-wrap">
     <span id="mps-lbl">MPS</span>
@@ -469,6 +488,42 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 </div>
 
 <div id="main">
+  <!-- DASHBOARD PANEL — mobile only -->
+  <div id="dash-panel">
+    <div class="dp-section">
+      <div class="dp-section-title">🔔 Live Alerts</div>
+      <div id="dp-alert-bar">
+        <div id="dp-alert-scroll">
+          <div class="alert-item" style="color:var(--txt3)"><span>Scanning…</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title">📊 Market Stats</div>
+      <div id="dp-stats-grid">
+        <div class="dp-stat"><div class="dp-stat-lbl">Top Pick</div><div class="dp-stat-val" id="dp-st-top">—</div><div class="dp-stat-sub" id="dp-st-top-s">—</div></div>
+        <div class="dp-stat"><div class="dp-stat-lbl">Best Mover</div><div class="dp-stat-val" id="dp-st-best">—</div><div class="dp-stat-sub" id="dp-st-best-s">daily Δ</div></div>
+        <div class="dp-stat"><div class="dp-stat-lbl">Breadth</div><div class="dp-stat-val" id="dp-st-breadth">—</div><div class="dp-stat-sub" id="dp-st-breadth-s">up/down</div></div>
+        <div class="dp-stat"><div class="dp-stat-lbl">Universe</div><div class="dp-stat-val" id="dp-st-univ">—</div><div class="dp-stat-sub" id="dp-st-univ-s">scanned</div></div>
+        <div class="dp-stat"><div class="dp-stat-lbl">SPY</div><div class="dp-stat-val" id="dp-st-spy">—</div><div class="dp-stat-sub" id="dp-st-spy-s">S&amp;P 500</div></div>
+        <div class="dp-stat"><div class="dp-stat-lbl">QQQ</div><div class="dp-stat-val" id="dp-st-qqq">—</div><div class="dp-stat-sub" id="dp-st-qqq-s">Nasdaq</div></div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title">📈 Indices</div>
+      <div id="dp-market"></div>
+      <div style="margin-top:10px">
+        <div class="dp-section-title" style="margin-bottom:6px">🌡 Market Pulse</div>
+        <div id="dp-mps-detail" style="font-size:10px;color:var(--txt2)">—</div>
+      </div>
+    </div>
+    <div class="dp-section">
+      <div class="dp-section-title">🗂 Sectors</div>
+      <div id="dp-sectors"></div>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+
   <!-- LEFT: Picks -->
   <div id="left-panel" class="mob-active">
     <div id="picks-header">
@@ -567,8 +622,12 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   </div>
 </div>
 
-<!-- MOBILE BOTTOM NAV -->
+<!-- MOBILE BOTTOM NAV — 5 buttons -->
 <nav id="mobile-nav">
+  <button class="mob-nav-btn" id="mnav-dash" onclick="switchMobilePanel('dash')">
+    <span class="mob-nav-icon">🏠</span>
+    <span class="mob-nav-label">Dashboard</span>
+  </button>
   <button class="mob-nav-btn active" id="mnav-picks" onclick="switchMobilePanel('picks')">
     <span class="mob-nav-icon">🎯</span>
     <span class="mob-nav-label">Picks</span>
@@ -694,6 +753,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     <div class="modal-body" style="padding:8px">
       <button class="hbtn" style="width:100%;margin-bottom:8px;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');showSettings()">⚙ Settings</button>
       <button class="hbtn" style="width:100%;margin-bottom:8px;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');showAccount()">👤 Account</button>
+      <button class="hbtn" style="width:100%;margin-bottom:8px;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');showWatchlist()">☰ Watchlist</button>
       <button class="hbtn primary" style="width:100%;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');manualRefresh()">↻ Refresh Data</button>
     </div>
   </div>
@@ -924,7 +984,7 @@ const S = {
     loggedIn: false,
     watchlistLoaded: false,
   },
-  mobilePanel: 'picks', // picks | chart | analysis
+  mobilePanel: 'picks',
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -952,38 +1012,30 @@ function initMobileNav() {
 function switchMobilePanel(panel) {
   if (!isMobile()) return;
   S.mobilePanel = panel;
-  // Update panel visibility
   document.getElementById('left-panel').classList.remove('mob-active');
   document.getElementById('center-panel').classList.remove('mob-active');
   document.getElementById('right-panel').classList.remove('mob-active');
-  if (panel === 'picks') document.getElementById('left-panel').classList.add('mob-active');
-  else if (panel === 'chart') document.getElementById('center-panel').classList.add('mob-active');
+  document.getElementById('dash-panel').classList.remove('mob-active');
+  if (panel === 'picks')    document.getElementById('left-panel').classList.add('mob-active');
+  else if (panel === 'chart')    document.getElementById('center-panel').classList.add('mob-active');
   else if (panel === 'analysis') document.getElementById('right-panel').classList.add('mob-active');
-  // Update nav buttons
-  ['picks','chart','analysis','account'].forEach(p => {
+  else if (panel === 'dash')     document.getElementById('dash-panel').classList.add('mob-active');
+  ['dash','picks','chart','analysis','account'].forEach(p => {
     const btn = document.getElementById('mnav-' + p);
     if (btn) btn.classList.toggle('active', p === panel);
   });
-  // Load news when switching to analysis
   if (panel === 'analysis' && (!S.allNews || !S.allNews.length)) {
     loadNewsFallback().catch(()=>{});
   }
 }
 
-function showMobileMenu() {
-  document.getElementById('mobile-menu-modal').classList.add('open');
-}
-
-// Handle orientation change: re-apply correct layout
 window.addEventListener('resize', () => {
   if (isMobile()) {
-    // Re-apply mobile panel, ensure correct panel is shown
     switchMobilePanel(S.mobilePanel);
   } else {
-    // Desktop: restore all panels
-    document.getElementById('left-panel').classList.remove('mob-active');
-    document.getElementById('center-panel').classList.remove('mob-active');
-    document.getElementById('right-panel').classList.remove('mob-active');
+    ['left-panel','center-panel','right-panel','dash-panel'].forEach(id => {
+      document.getElementById(id).classList.remove('mob-active');
+    });
   }
 });
 
@@ -1031,7 +1083,6 @@ function loadNewsCache() {
 function startAutoRefresh() {
   if (S.refreshTimer) clearTimeout(S.refreshTimer);
   if (!S.refreshMs) return;
-
   const scheduleNext = () => {
     const base = Math.max(30000, S.refreshMs || 300000);
     const jitter = Math.round(base * (0.85 + Math.random() * 0.30));
@@ -1040,7 +1091,6 @@ function startAutoRefresh() {
       if (S.refreshMs) scheduleNext();
     }, jitter);
   };
-
   scheduleNext();
 }
 function manualRefresh() { refresh(false); }
@@ -1067,6 +1117,7 @@ async function refresh(background=false) {
   if (!S.gasUrl) {
     showSetupBanner(true);
     setStatus('Setup required', 'err');
+    S.refreshing = false;
     return;
   }
 
@@ -1080,6 +1131,7 @@ async function refresh(background=false) {
     if (!quotesData.length && !cached) {
       showSetupBanner(false);
       setStatus('No data — sheet may still be loading', 'err');
+      S.refreshing = false;
       return;
     }
 
@@ -1104,9 +1156,7 @@ async function refresh(background=false) {
 
     renderStats(); renderPicks(); renderAlertBar();
     renderSectorHeatmap(); renderMarketOverview(); renderNews(newsData);
-    if (!newsData || !newsData.length) {
-      loadNewsFallback().catch(()=>{});
-    }
+    if (!newsData || !newsData.length) loadNewsFallback().catch(()=>{});
 
     if (S.chart.ticker && S.quotes[S.chart.ticker]) {
       updateTradeDisplay(S.chart.ticker);
@@ -1224,7 +1274,6 @@ function scoreStock(q, spyChg) {
   const avg   = q.averageDailyVolume3Month || vol || 1;
   const high  = q.regularMarketDayHigh || q.regularMarketPrice;
   const low   = q.regularMarketDayLow  || q.regularMarketPrice;
-  const prev  = q.regularMarketPreviousClose || q.regularMarketPrice;
   const price = q.regularMarketPrice || 1;
   const wkH   = q.fiftyTwoWeekHigh || price;
   const wkL   = q.fiftyTwoWeekLow  || price;
@@ -1238,25 +1287,20 @@ function scoreStock(q, spyChg) {
   else if (vr > 1.5) s += 4;
   else if (vr > 1.2) s += 2;
   else if (vr < 0.5) s -= 6;
-
   if      (wkPos > 0.92) s += 14;
   else if (wkPos > 0.75) s += 9;
   else if (wkPos > 0.55) s += 3;
   else if (wkPos < 0.15) s -= 14;
   else if (wkPos < 0.25) s -= 8;
-
   if (spyChg !== null) s += clamp((chg-spyChg)*2, -10, 10);
-
   const rangePct = (high-low)/price;
   if (rangePct < 0.01) s += 5;
   else if (rangePct < 0.02) s += 2;
   else if (rangePct > 0.1) s -= 5;
-
   const open = q.regularMarketOpen || price;
   if (price > open && chg > 0) s += 5;
   if (price < open && chg < 0) s -= 3;
   if (chg > 1.5 && wkPos > 0.7) s += 4;
-
   if (ETF_SKIP.includes(q.symbol)) s -= 35;
   return clamp(Math.round(s), 0, 100);
 }
@@ -1287,7 +1331,6 @@ function scoreAndRank(spyChg, wl) {
   all.sort((a,b) => b._score - a._score);
   const univSet = new Set(UNIVERSE);
   const universe = all.filter(q => univSet.has(q.symbol) && !ETF_SKIP.includes(q.symbol));
-
   S.picks.top = universe.slice(0,3).map((q,i) => buildPick(q,i+1));
   S.picks.hr  = universe.filter(q => calcRR(q).rr >= 2.5 && (q.regularMarketChangePercent||0) > 0.5).slice(0,8).map((q,i) => buildPick(q,i+1));
   S.picks.tr  = universe
@@ -1300,7 +1343,6 @@ function scoreAndRank(spyChg, wl) {
     })
     .sort((a,b) => Math.abs(b.regularMarketChangePercent||0) - Math.abs(a.regularMarketChangePercent||0))
     .slice(0,10).map((q,i) => buildPick(q,i+1));
-
   const wlSet = new Set((wl||[]).map(s => s.toUpperCase()));
   S.picks.wl  = all.filter(q => wlSet.has(q.symbol)).map((q,i) => buildPick(q,i+1));
 }
@@ -1371,7 +1413,7 @@ function calcSectorPerf() {
 
 function renderSectorHeatmap() {
   const sorted = Object.entries(S.sectorPerf).sort((a,b) => b[1]-a[1]);
-  document.getElementById('sector-chips').innerHTML = sorted.map(([sec, chg]) => {
+  const makeChips = (sorted) => sorted.map(([sec, chg]) => {
     const i = Math.min(Math.abs(chg)/3, 1);
     let bg, color, border;
     if (chg > 0.4) {
@@ -1384,6 +1426,10 @@ function renderSectorHeatmap() {
     const sign = chg >= 0 ? '+' : '';
     return `<div class="sec-chip" style="background:${bg};color:${color};border-color:${border}" title="${sec}">${sec.slice(0,3)} <strong>${sign}${chg}%</strong></div>`;
   }).join('');
+  document.getElementById('sector-chips').innerHTML = makeChips(sorted);
+  // Also update dashboard panel
+  const dpSec = document.getElementById('dp-sectors');
+  if (dpSec) dpSec.innerHTML = makeChips(sorted);
 }
 
 // ════════════════════════════════════════════════════════
@@ -1402,11 +1448,14 @@ function calcMPS(spyChg) {
   document.getElementById('mps-val').style.color = color;
   document.getElementById('mps-val').textContent = S.mps;
   const sent = S.mps>=70?'📈 Greed — Longs favored':S.mps>=55?'↗ Optimism — Slight bull lean':S.mps>=45?'➡ Neutral — No clear edge':S.mps>=30?'↘ Caution — Broad weakness':'📉 Fear — Heavy selling';
-  document.getElementById('mps-detail').innerHTML = `
+  const mpsHtml = `
     <div style="font-family:var(--font-mono);font-size:11px;color:${color};margin-bottom:6px">${sent}</div>
     <div style="font-size:9px;color:var(--txt3)">Breadth: ${ups}/${total} stocks positive</div>
     <div style="font-size:9px;color:var(--txt3)">SPY: ${spyChg!==null?(spyChg>=0?'+':'')+fmt2(spyChg)+'%':'—'}</div>
     <div style="font-size:9px;color:var(--txt3)">Pulse Score: ${S.mps}/100</div>`;
+  document.getElementById('mps-detail').innerHTML = mpsHtml;
+  const dpMps = document.getElementById('dp-mps-detail');
+  if (dpMps) dpMps.innerHTML = mpsHtml;
 }
 
 // ════════════════════════════════════════════════════════
@@ -1431,21 +1480,27 @@ function buildAlerts() {
 }
 
 function renderAlertBar() {
+  const makeItems = (alerts) => {
+    if (!alerts.length) return '<div class="alert-item" style="color:var(--txt3)"><span>No ±3% moves yet</span></div>';
+    return [...alerts, ...alerts, ...alerts].map(a =>
+      `<div class="alert-item" onclick="selectPick('${a.ticker}')">
+        <span style="color:${a.color};font-weight:600">${a.ticker}</span>
+        <span class="al-tag" style="background:${a.type==='bull'?'rgba(24,224,122,.15)':'rgba(240,64,96,.15)'};border:1px solid ${a.type==='bull'?'var(--green2)':'var(--red2)'};color:${a.color}">${a.label}</span>
+      </div>`
+    ).join('');
+  };
+  const speed = !S.alerts.length ? 'none' : `scrollLeft ${Math.max(24, 14 + S.alerts.length * 2.5)}s linear infinite`;
+
   const el = document.getElementById('alert-scroll');
-  if (!S.alerts.length) {
-    el.innerHTML = '<div class="alert-item" style="color:var(--txt3)"><span>No ±3% moves yet</span></div>';
-    el.style.animation = 'none';
-    return;
+  el.innerHTML = makeItems(S.alerts);
+  el.style.animation = speed;
+
+  // Mirror into dashboard panel
+  const dpEl = document.getElementById('dp-alert-scroll');
+  if (dpEl) {
+    dpEl.innerHTML = makeItems(S.alerts);
+    dpEl.style.animation = speed;
   }
-  const items = [...S.alerts, ...S.alerts, ...S.alerts];
-  el.innerHTML = items.map(a => {
-    return `<div class="alert-item" onclick="selectPick('${a.ticker}')">
-      <span style="color:${a.color};font-weight:600">${a.ticker}</span>
-      <span class="al-tag" style="background:${a.type==='bull'?'rgba(24,224,122,.15)':'rgba(240,64,96,.15)'};border:1px solid ${a.type==='bull'?'var(--green2)':'var(--red2)'};color:${a.color}">${a.label}</span>
-    </div>`;
-  }).join('');
-  const speed = Math.max(24, 14 + S.alerts.length * 2.5);
-  el.style.animation = `scrollLeft ${speed}s linear infinite`;
 }
 
 // ════════════════════════════════════════════════════════
@@ -1516,7 +1571,7 @@ function switchRtab(tab) {
 }
 
 // ════════════════════════════════════════════════════════
-// STATS BAR
+// STATS BAR — updates both desktop statbar and dp-stats
 // ════════════════════════════════════════════════════════
 function renderStats() {
   const top = S.picks.top[0];
@@ -1525,34 +1580,36 @@ function renderStats() {
   const dns = allQ.filter(q => (q.regularMarketChangePercent||0) < 0).length;
   const best = allQ.filter(q => !ETF_SKIP.includes(q.symbol)).sort((a,b) => (b.regularMarketChangePercent||0)-(a.regularMarketChangePercent||0))[0];
   const spy = S.quotes['SPY'], qqq = S.quotes['QQQ'];
+
+  // Helper: set both desktop statbar and dash panel dp-stats
+  function setStat(id, val, cls, sub) {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = val; if (cls) el.className = 'stat-val ' + cls; }
+    const dpEl = document.getElementById('dp-' + id);
+    if (dpEl) { dpEl.textContent = val; if (cls) dpEl.className = 'dp-stat-val ' + cls; }
+    const subEl = document.getElementById(id + '-s');
+    if (subEl) subEl.textContent = sub;
+    const dpSubEl = document.getElementById('dp-' + id + '-s');
+    if (dpSubEl) dpSubEl.textContent = sub;
+  }
+
   if (top) {
-    document.getElementById('st-top').textContent = top.ticker;
-    document.getElementById('st-top').className   = 'stat-val '+(top.change1D>=0?'up':'dn');
-    document.getElementById('st-top-s').textContent = `$${fmt2(top.price)} ${top.change1D>=0?'+':''}${fmt2(top.change1D)}%`;
+    setStat('st-top', top.ticker, top.change1D>=0?'up':'dn', `$${fmt2(top.price)} ${top.change1D>=0?'+':''}${fmt2(top.change1D)}%`);
   }
   if (best) {
     const c = best.regularMarketChangePercent;
-    document.getElementById('st-best').textContent = best.symbol;
-    document.getElementById('st-best').className   = 'stat-val '+(c>=0?'up':'dn');
-    document.getElementById('st-best-s').textContent = `${c>=0?'+':''}${fmt2(c)}% today`;
+    setStat('st-best', best.symbol, c>=0?'up':'dn', `${c>=0?'+':''}${fmt2(c)}% today`);
   }
-  document.getElementById('st-breadth').textContent = `${ups}↑ ${dns}↓`;
-  document.getElementById('st-breadth').className   = 'stat-val '+(ups>dns?'up':'dn');
-  document.getElementById('st-breadth-s').textContent = `${Math.round(ups/(ups+dns||1)*100)}% positive`;
+  setStat('st-breadth', `${ups}↑ ${dns}↓`, ups>dns?'up':'dn', `${Math.round(ups/(ups+dns||1)*100)}% positive`);
   const univCount = Object.keys(S.quotes).filter(s => UNIVERSE.includes(s)).length;
-  document.getElementById('st-univ').textContent = univCount;
-  document.getElementById('st-univ-s').textContent = `${S.watchlist.filter(s => S.quotes[s]).length} watching`;
+  setStat('st-univ', univCount, 'nu', `${S.watchlist.filter(s => S.quotes[s]).length} watching`);
   if (spy) {
     const c = spy.regularMarketChangePercent||0;
-    document.getElementById('st-spy').textContent = `$${fmt2(spy.regularMarketPrice)}`;
-    document.getElementById('st-spy').className   = 'stat-val '+(c>=0?'up':'dn');
-    document.getElementById('st-spy-s').textContent = `${c>=0?'+':''}${fmt2(c)}%`;
+    setStat('st-spy', `$${fmt2(spy.regularMarketPrice)}`, c>=0?'up':'dn', `${c>=0?'+':''}${fmt2(c)}%`);
   }
   if (qqq) {
     const c = qqq.regularMarketChangePercent||0;
-    document.getElementById('st-qqq').textContent = `$${fmt2(qqq.regularMarketPrice)}`;
-    document.getElementById('st-qqq').className   = 'stat-val '+(c>=0?'up':'dn');
-    document.getElementById('st-qqq-s').textContent = `${c>=0?'+':''}${fmt2(c)}%`;
+    setStat('st-qqq', `$${fmt2(qqq.regularMarketPrice)}`, c>=0?'up':'dn', `${c>=0?'+':''}${fmt2(c)}%`);
   }
 }
 
@@ -1565,7 +1622,6 @@ function selectPick(ticker) {
   loadChart(ticker);
   updateTradeDisplay(ticker);
   triggerAnalysis(ticker);
-  // On mobile: switch to chart panel after selecting
   if (isMobile()) switchMobilePanel('chart');
   else if (S.activeRtab !== 'analysis') switchRtab('analysis');
 }
@@ -1821,7 +1877,6 @@ function getRuleBasedAnalysis(q, news) {
 
   if(price>open&&chg>0){bull+=1;sigs.push('Closing above open — bullish tape');}
   if(price<open&&chg<0){bear+=1;sigs.push('Closing below open — bearish tape');}
-
   const rangePct=(high-low)/price;
   if(rangePct<0.012&&chg>0){bull+=1;sigs.push('Tight controlled advance');}
   if(rangePct>0.08) sigs.push('Wide volatile range — use wider stops');
@@ -1921,7 +1976,7 @@ HOLD: [suggested hold period]`;
 // ════════════════════════════════════════════════════════
 function renderMarketOverview() {
   const lbls={SPY:'S&P 500',QQQ:'Nasdaq 100',IWM:'Russell 2000',VOO:'Vanguard S&P 500',DIA:'Dow Jones ETF'};
-  document.getElementById('market-overview').innerHTML = MKT_TICKERS.map(sym => {
+  const html = MKT_TICKERS.map(sym => {
     const q=S.quotes[sym]; if(!q)return'';
     const c=q.regularMarketChangePercent||0, cls=c>=0?'up':'dn';
     const wkH=q.fiftyTwoWeekHigh||q.regularMarketPrice, wkL=q.fiftyTwoWeekLow||0;
@@ -1930,6 +1985,10 @@ function renderMarketOverview() {
       <div style="text-align:right"><div class="mkt-price ${cls}">$${fmt2(q.regularMarketPrice)}</div><div class="mkt-chg ${cls}">${c>=0?'+':''}${fmt2(c)}%</div></div></div>
       <div class="mkt-bar-wrap"><div class="mkt-bar" style="width:${pos.toFixed(0)}%;background:${c>=0?'var(--green)':'var(--red)'}"></div></div>`;
   }).join('');
+  document.getElementById('market-overview').innerHTML = html;
+  // Also update dashboard panel
+  const dpMkt = document.getElementById('dp-market');
+  if (dpMkt) dpMkt.innerHTML = html;
 }
 
 function sentimentScore(title) {
@@ -1980,7 +2039,6 @@ function renderNews(articles) {
 // ════════════════════════════════════════════════════════
 async function syncToSheets() {
   if (!S.gasUrl || S.syncing || !S.picks.top.length) return;
-
   const payload = {
     generatedAt: new Date().toISOString(),
     topPicks: S.picks.top,
@@ -1989,7 +2047,6 @@ async function syncToSheets() {
   const hash = JSON.stringify(payload.topPicks) + '|' + JSON.stringify(payload.highRewardPicks);
   const now = Date.now();
   if (S.lastSyncHash === hash && (now - (S.lastSyncAt || 0)) < 120000) return;
-
   S.syncing = true;
   try {
     await fetch(S.gasUrl, { method:'POST', body: JSON.stringify(payload) });
