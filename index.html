@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
 <title>Market Tracker · Daily Picks</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
@@ -22,6 +22,7 @@
   --font-mono:'IBM Plex Mono',monospace;
   --font-sans:'IBM Plex Sans',sans-serif;
   --r:4px;--r2:6px;
+  --mob-nav-h:0px;
 }
 html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--font-sans);font-size:13px;overflow:hidden}
 ::-webkit-scrollbar{width:3px;height:3px}
@@ -121,7 +122,6 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 #chart-search::placeholder{color:var(--txt3)}
 #load-btn{background:var(--bluef);border:1px solid var(--blue);color:var(--blue);font-family:var(--font-mono);font-size:9px;padding:4px 8px;border-radius:var(--r);cursor:pointer;transition:all .15s}
 #load-btn:hover{background:var(--blue2)}
-/* SEARCH DROPDOWN */
 #search-wrap{position:relative;display:flex;align-items:center;gap:5px;flex-shrink:0}
 #search-dropdown{position:absolute;top:calc(100% + 4px);left:0;width:260px;background:var(--bg2);border:1px solid var(--border3);border-radius:var(--r);z-index:200;max-height:220px;overflow-y:auto;box-shadow:0 8px 28px rgba(0,0,0,.6);display:none}
 .sd-item{padding:5px 10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;transition:background .1s;border-bottom:1px solid var(--border)}
@@ -130,7 +130,6 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 .sd-sym{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--txt);flex-shrink:0}
 .sd-name{font-size:9px;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
 .sd-chg{font-family:var(--font-mono);font-size:9px;flex-shrink:0}
-/* PREVIOUS STOCK BADGE */
 #prev-stock{display:none;align-items:center;gap:6px;padding:3px 9px;border:1px solid var(--border2);border-radius:var(--r);background:var(--bg3);flex-shrink:0}
 #prev-stock.show{display:flex}
 .ps-label{font-size:8px;color:var(--txt3);font-family:var(--font-mono)}
@@ -262,9 +261,152 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 #setup-howto{font-size:9px;color:var(--txt3);font-family:var(--font-mono);cursor:pointer;text-decoration:underline dotted}
 #setup-howto:hover{color:var(--txt2)}
 
-@media(max-width:1000px){#right-panel{width:240px}#left-panel{width:260px}}
-@media(max-width:750px){#right-panel{width:100%}#left-panel{width:240px}}
-@media(max-width:520px){#main{flex-direction:column;height:auto;overflow:visible}html,body{overflow:auto}#center-panel{order:1;width:100%;height:78vh;min-height:78vh;border:none;border-bottom:1px solid var(--border)}#right-panel{order:2;width:100%;border-left:none;border-bottom:1px solid var(--border)}#left-panel{order:3;width:100%;height:auto;max-height:38vh;border-right:none;border-bottom:none}#chart-wrap{height:auto;min-height:calc(78vh - 124px);flex:1}#chart-header{align-items:flex-start}#search-wrap{width:100%;flex-wrap:wrap}#chart-search{width:calc(100vw - 170px);min-width:120px}.range-btns{width:100%;margin-left:0;justify-content:flex-start}#trade-bar{align-items:flex-start}}
+/* ══ MOBILE BOTTOM NAV ══════════════════════════════════════════ */
+#mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:52px;background:var(--bg2);border-top:1px solid var(--border);z-index:150;padding-bottom:env(safe-area-inset-bottom,0)}
+.mob-nav-btn{flex:1;background:none;border:none;color:var(--txt3);font-family:var(--font-mono);font-size:8px;padding:6px 4px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border-top:2px solid transparent;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.mob-nav-btn.active{color:var(--blue);border-top-color:var(--blue)}
+.mob-nav-icon{font-size:18px;line-height:1}
+.mob-nav-label{font-size:8px;letter-spacing:.04em}
+
+/* ══ TABLET ════════════════════════════════════════════════════ */
+@media(max-width:1000px){
+  #right-panel{width:240px}
+  #left-panel{width:260px}
+}
+@media(max-width:750px){
+  #right-panel{width:220px}
+  #left-panel{width:240px}
+  .hbtn{font-size:9px;padding:3px 7px}
+  #time-wrap{display:none}
+  #mps-wrap{display:none}
+}
+
+/* ══ MOBILE PORTRAIT (≤600px) ═══════════════════════════════════ */
+@media(max-width:600px){
+  :root{--mob-nav-h:52px}
+
+  html,body{overflow:hidden;height:100%;height:100dvh}
+
+  /* Compact header */
+  #header{height:42px;padding:6px 10px;gap:6px}
+  .logo-text-sub{display:none}
+  #mps-wrap{display:none}
+  #time-wrap{display:none}
+  #live-badge{padding:2px 5px}
+  .hbtn{font-size:9px;padding:3px 6px}
+  /* Hide Settings/Account/Watchlist text labels on tiny screens, keep Refresh */
+  .hbtn:not(.primary){display:none}
+
+  /* Compact alert bar */
+  #alert-bar{height:22px}
+  #alert-lbl{font-size:8px;padding:0 7px}
+  .alert-item{font-size:9px;padding:0 8px}
+
+  /* Compact stat bar */
+  #statbar{height:42px;flex-wrap:nowrap}
+  .stat-cell{min-width:64px;padding:4px 8px}
+  .stat-val{font-size:11px}
+  .stat-lbl{font-size:7px}
+  .stat-sub{font-size:8px}
+
+  /* Main container: full height minus nav */
+  #main{
+    display:block;
+    height:calc(100dvh - 42px - 22px - 42px - var(--mob-nav-h));
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* All panels: absolute, fill container, hidden by default */
+  #left-panel,#center-panel,#right-panel{
+    position:absolute;inset:0;
+    width:100% !important;height:100% !important;
+    border:none !important;
+    display:none;
+    flex-direction:column;
+  }
+  /* Active panel visible */
+  #left-panel.mob-active{display:flex}
+  #center-panel.mob-active{display:flex}
+  #right-panel.mob-active{display:flex}
+
+  /* Chart panel adjustments */
+  #chart-header{padding:6px 8px;gap:5px;flex-wrap:wrap;align-items:flex-start}
+  #search-wrap{width:100%;order:1}
+  #chart-search{flex:1;width:auto;min-width:80px;font-size:12px;padding:5px 8px}
+  #load-btn{padding:5px 10px;font-size:10px}
+  #search-dropdown{width:100%;max-width:100vw}
+  #prev-stock{order:2}
+  #chart-lbl{font-size:13px;order:3}
+  #chart-price-lbl{order:4}
+  #chart-detail{order:5;width:100%;gap:6px}
+  .range-btns{order:6;width:100%;margin-left:0;justify-content:space-between;gap:2px}
+  .range-btn{flex:1;text-align:center;padding:4px 2px;font-size:9px}
+  #chart-wrap{flex:1;min-height:0}
+  #sector-wrap{height:30px;padding:3px 6px}
+  #sector-lbl{font-size:7px}
+  .sec-chip{font-size:8px;padding:2px 5px}
+  #trade-bar{padding:5px 8px;gap:6px;flex-wrap:wrap}
+  #trade-params{gap:3px}
+  .tp{font-size:8px;padding:2px 5px}
+
+  /* Picks panel */
+  #picks-header{padding:6px 8px;gap:3px}
+  .tab-btn{font-size:8px;padding:3px 7px}
+  #picks-list{padding:5px}
+  .pick-card{padding:8px 10px;margin-bottom:4px}
+  .pc-ticker{font-size:14px}
+  .pc-price{font-size:13px}
+  .ptag{font-size:8px;padding:2px 5px}
+
+  /* Right panel */
+  #rtab-bar{display:flex !important;height:34px;flex-shrink:0}
+  .rtab{font-size:9px;padding:5px 4px}
+  #right-content{padding:8px}
+  .news-title{font-size:11px}
+  .news-meta{font-size:9px}
+
+  /* Bottom bar hidden; mobile nav shown */
+  #bottom-bar{display:none}
+  #mobile-nav{display:flex}
+
+  /* Toast above nav */
+  #toast{bottom:calc(var(--mob-nav-h) + 10px)}
+
+  /* Modals full-screen on mobile */
+  .modal{width:100vw;max-height:90dvh;border-radius:var(--r2) var(--r2) 0 0;position:fixed;bottom:0;left:0;right:0;margin:0}
+  .modal-bg.open{align-items:flex-end}
+  .modal-footer{flex-wrap:wrap;gap:5px}
+  .modal-footer button{flex:1;min-width:0}
+  .btn-c,.btn-s{font-size:11px;padding:8px 8px}
+  .fi{font-size:12px;padding:8px 10px}
+}
+
+/* ══ MOBILE LANDSCAPE (short + narrow) ═══════════════════════════ */
+@media(max-width:900px) and (max-height:480px){
+  :root{--mob-nav-h:44px}
+  #header{height:36px;padding:4px 8px;gap:5px}
+  #alert-bar{height:20px}
+  #statbar{height:32px}
+  .stat-cell{padding:3px 7px;min-width:55px}
+  .stat-val{font-size:10px}
+  .stat-sub{display:none}
+  #main{height:calc(100dvh - 36px - 20px - 32px - var(--mob-nav-h));display:block;overflow:hidden;position:relative}
+  #left-panel,#center-panel,#right-panel{position:absolute;inset:0;width:100% !important;height:100% !important;border:none !important;display:none;flex-direction:column}
+  #left-panel.mob-active{display:flex}
+  #center-panel.mob-active{display:flex}
+  #right-panel.mob-active{display:flex}
+  #chart-header{padding:4px 8px;gap:4px}
+  .range-btn{padding:3px 4px;font-size:8px}
+  #sector-wrap{height:26px;padding:2px 6px}
+  #trade-bar{padding:3px 8px}
+  #bottom-bar{display:none}
+  #mobile-nav{display:flex;height:44px}
+  .mob-nav-btn{padding:4px 4px 2px}
+  .mob-nav-icon{font-size:15px}
+  .mob-nav-label{font-size:7px}
+  #toast{bottom:calc(44px + 6px)}
+}
 
 @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
 @keyframes glow{0%,100%{box-shadow:0 0 4px var(--green)}50%{box-shadow:0 0 10px var(--green)}}
@@ -280,7 +422,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   <div class="logo">
     <div class="logo-mark">📈</div>
     Market<span style="color:var(--green)">Tracker</span>
-    <span style="color:var(--txt3);font-weight:300;font-size:10px">· Daily Picks</span>
+    <span class="logo-text-sub" style="color:var(--txt3);font-weight:300;font-size:10px">· Daily Picks</span>
   </div>
   <div id="live-badge"><div id="live-dot" class="loading"></div><span id="live-txt">Starting…</span></div>
   <div id="mps-wrap">
@@ -323,8 +465,8 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 </div>
 
 <div id="main">
-  <!-- LEFT -->
-  <div id="left-panel">
+  <!-- LEFT: Picks -->
+  <div id="left-panel" class="mob-active">
     <div id="picks-header">
       <button class="tab-btn t-top" id="tab-top" onclick="switchTab('top')">🎯 Top 3</button>
       <button class="tab-btn" id="tab-hr"  onclick="switchTab('hr')">🔥 Hi-R</button>
@@ -337,7 +479,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     </div>
   </div>
 
-  <!-- CENTER -->
+  <!-- CENTER: Chart -->
   <div id="center-panel">
     <div id="chart-header">
       <div id="search-wrap">
@@ -385,7 +527,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     </div>
   </div>
 
-  <!-- RIGHT -->
+  <!-- RIGHT: Analysis + News -->
   <div id="right-panel">
     <div id="rtab-bar">
       <div class="rtab ra" id="rt-analysis" onclick="switchRtab('analysis')">Analysis</div>
@@ -421,13 +563,32 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   </div>
 </div>
 
+<!-- MOBILE BOTTOM NAV -->
+<nav id="mobile-nav">
+  <button class="mob-nav-btn active" id="mnav-picks" onclick="switchMobilePanel('picks')">
+    <span class="mob-nav-icon">🎯</span>
+    <span class="mob-nav-label">Picks</span>
+  </button>
+  <button class="mob-nav-btn" id="mnav-chart" onclick="switchMobilePanel('chart')">
+    <span class="mob-nav-icon">📊</span>
+    <span class="mob-nav-label">Chart</span>
+  </button>
+  <button class="mob-nav-btn" id="mnav-analysis" onclick="switchMobilePanel('analysis')">
+    <span class="mob-nav-icon">🧠</span>
+    <span class="mob-nav-label">Analysis</span>
+  </button>
+  <button class="mob-nav-btn" id="mnav-settings" onclick="showMobileMenu()">
+    <span class="mob-nav-icon">☰</span>
+    <span class="mob-nav-label">Menu</span>
+  </button>
+</nav>
+
 <div id="bottom-bar">
   <div id="sheets-dot"></div>
   <span id="sheets-txt">Sheets: not connected</span>
   <div class="spacer"></div>
   <span>Yahoo Finance · TradingView · Free &amp; Open · v3.0</span>
 </div>
-
 
 <!-- ACCOUNT MODAL -->
 <div class="modal-bg" id="account-modal">
@@ -463,7 +624,6 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     </div>
   </div>
 </div>
-
 
 <!-- WATCHLIST MODAL -->
 <div class="modal-bg" id="watchlist-modal">
@@ -523,6 +683,19 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   </div>
 </div>
 
+<!-- MOBILE MENU MODAL -->
+<div class="modal-bg" id="mobile-menu-modal">
+  <div class="modal" style="max-width:320px">
+    <div class="modal-header">☰ Menu<button class="modal-close" onclick="closeModal('mobile-menu-modal')">✕</button></div>
+    <div class="modal-body" style="padding:8px">
+      <button class="hbtn" style="width:100%;margin-bottom:8px;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');showSettings()">⚙ Settings</button>
+      <button class="hbtn" style="width:100%;margin-bottom:8px;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');showAccount()">👤 Account</button>
+      <button class="hbtn" style="width:100%;margin-bottom:8px;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');showWatchlist()">⭐ Watchlist</button>
+      <button class="hbtn primary" style="width:100%;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');manualRefresh()">↻ Refresh Data</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -532,9 +705,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbww7FOVnE_DaNLhTZk9h9J_KP8349xBLuLdPm2KiSAhQGFb2BMdXncDatPSyqOj2eD5/exec';
 
 const UNIVERSE = [
-  // Mega-cap
   'AAPL','MSFT','NVDA','AMZN','META','GOOGL','GOOG','TSLA','AVGO','LLY',
-  // S&P 500 core
   'JPM','V','UNH','XOM','MA','JNJ','HD','PG','COST','ABBV',
   'NFLX','BAC','CRM','MRK','CVX','ORCL','PEP','TMO','ADBE','KO',
   'AMD','WMT','CSCO','ACN','ABT','IBM','MCD','GE','CAT','INTU',
@@ -552,7 +723,6 @@ const UNIVERSE = [
   'MPWR','ENPH','FSLR','SRE','AEP','EXC','CEG','PCG',
   'HES','MRO','APA','OKE','KMI','WMB','LIN','PPG','ECL','ALB',
   'NEM','GOLD','WPM','AEM','FCX','CLF','NUE','STLD',
-  // Tech growth/cloud
   'PLTR','ARM','SMCI','SNOW','NET','DDOG','MDB','ZS',
   'CRWD','PANW','FTNT','S','TENB','CYBR','VRNS',
   'UBER','LYFT','ABNB','SHOP','MELI','ROKU','RBLX',
@@ -562,51 +732,36 @@ const UNIVERSE = [
   'ZM','RNG','TWLO','BAND','EGHT',
   'TTWO','EA','U','APP','TTD','MGNI','PUBM',
   'DUOL','GTLB','SMAR','CFLT','DBRG',
-  // Financial extended
   'PYPL','SQ','COIN','HOOD','SOFI','UPST','AFRM','ALLY',
   'IBKR','NDAQ','CBOE','MKTX','BK','STT','BX','KKR','APO',
   'COF','DFS','SYF','AXP','V','MA',
-  // Healthcare extended
   'MRNA','PFE','ABBV','LLY','GILD','ISRG','DXCM','ILMN',
   'IOVA','BEAM','EDIT','CRSP','NTLA','ARVN','RXRX',
   'EXAS','NTRA','HOLX','TFX','STE','EHC','MOH','CNC','ELV','HUM',
   'CVS','WBA','MCK','ABC','UNH','JNJ','MRK','REGN',
-  // Consumer/Retail
   'NKE','SBUX','MCD','DIS','COST','TGT','WMT','HD','LULU','CHWY',
   'ETSY','EBAY','W','CVNA','AN','KMX','GPS','ANF','URBN',
   'ROST','BURL','FIVE','DG','DLTR','KR','SFM',
   'YUM','DPZ','QSR','JACK','DENN','CMG',
-  // Auto/EV
   'F','GM','RIVN','LCID','NIO','XPEV','LI','FSR',
-  // Airlines/Travel
   'UAL','DAL','AAL','LUV','ALK','JBLU','EXPE','BKNG','TRIP',
-  // Hotels/Leisure
   'CCL','RCL','NCLH','MAR','HLT','H','DKNG','PENN',
-  // Industrial/Defense
   'BA','LMT','RTX','NOC','GD','HII','TDG','HWM',
   'FDX','UPS','XPO','SAIA','JBHT','UNP',
   'HON','DE','CMI','CAT','EMR','ETN','PH','ITW',
-  // Energy/Clean
   'XOM','CVX','COP','SLB','HAL','OXY',
   'PLUG','FCEL','BLNK','CHPT','EVGO','ENPH','FSLR','NEE',
-  // Telecom/Media
   'CMCSA','NFLX','PARA','WBD','FOXA','FOX','NWSA','DIS',
   'T','VZ','TMUS','LUMN',
-  // Crypto-adjacent
   'MSTR','MARA','RIOT','HUT','BTBT','CLSK','CIFR','COIN',
-  // Space/Drones/Future
   'RKLB','LUNR','ACHR','JOBY','SPCE',
-  // AI/Quantum
   'IONQ','RGTI','QBTS','SOUN','BBAI','ARQQ',
-  // High-vol / meme / speculative
   'GME','AMC','BB','BBAI','IONQ',
   'HOOD','SOFI','LCID','RIVN',
 ];
 
-// Comprehensive ticker list for search dropdown (includes ETFs + all above + more)
 const ALL_TICKERS = [...new Set([
   ...UNIVERSE,
-  // More S&P 500
   'AIG','ALL','ATO','AWK','AZO','BAX','BDX','BEN','BF-B','BIIB','BK','BKR','BMY',
   'BWA','BXP','CAG','CC','CDNS','CF','CFG','CHD','CHRW','CHTR','CINF','CLX','CMA',
   'CMI','CMS','CNP','COO','CPB','CPT','CRL','CTLT','CTSH','CTVA','D','DD','DEO',
@@ -628,48 +783,13 @@ const ALL_TICKERS = [...new Set([
   'UDR','UHS','ULTA','UNP','UPS','URI','USB','VFC','VLO','VMC','VNO',
   'VRSK','VRSN','VRTX','VZ','WAB','WAT','WBD','WDC','WHR','WRB','WRK','WY',
   'XEL','XYL','YUM','ZBH','ZBRA','ZION','ZTS',
-  // Popular ETFs
   'SPY','QQQ','IWM','DIA','VTI','VOO','VEA','VWO','GLD','SLV','USO','TLT','HYG','LQD',
   'XLK','XLF','XLV','XLE','XLY','XLI','XLB','XLC','XLU','XLRE',
   'ARKK','ARKG','ARKW','ARKF','ARKQ',
   'SOXL','SOXS','TQQQ','SQQQ','SPXL','SPXS','UVXY','VXX',
   'GDX','GDXJ','SLV','PPLT','PALL',
-  // Popular mid/small caps
-  'ACHR','AEHR','ALNY','ALXO','AMRN','APP','APAM','APPN','APLS',
-  'ARCC','ARDX','ARGT','ARKK','ARVN','ARWR','ASML','AZEK',
-  'BALL','BAND','BCRX','BE','BECN','BHC','BILL','BKNG','BLDR','BLUE','BMRN',
-  'BNTX','BOOT','BRZE','BTG','BYND','C3AI','CALX','CASY','CCEP',
-  'CDNS','CELH','CFLT','CHRD','CLBT','CLFD','COOP','COTY','CPRT',
-  'CRSP','CRUS','CSGP','CTRE','CWAN','CWST','DAVA','DCBO','DECK',
-  'DKNG','DLO','DNB','DOCN','DOX','DT','DUOL','EGO','ELAN','ELF','ELV',
-  'EME','ENTG','EPAM','ERIE','ESTC','EVGO','EXAS','EXLS',
-  'FARO','FIGS','FIVN','FIX','FLNC','FLUT','FND','FORM','FROG','FSK',
-  'FSLR','FTNT','FUBO','FUTU','GEN','GENI','GERN','GH','GKOS','GLBE','GLOB',
-  'GOLF','GTLB','GWRE','HAYW','HEEL','HQY','HRB','HRI',
-  'IAC','IBKR','IDCC','IIPR','INFA','INSM','INSP','INTU','IOVA',
-  'JACK','JAMF','JBLU','JELD','JOBY','JOBS',
-  'KAVL','KC','KKR','KLIC','KNSL','KROS','KSS',
-  'LBRT','LGND','LIND','LMB','LMND','LOPE','LPLA','LSCC','LSTR',
-  'LUNA','MARA','MASI','MATX','MDGL','MDLZ','MED','MEDP','MMSI',
-  'MOMO','MPLN','MRCY','MUSA','NCNO','NEO','NGVT','NKLA','NNN',
-  'NOVA','NOVT','NTRA','NUVL','NVT','OABI','OCFC','OKTA','OMCL',
-  'ONTO','OPEN','ORGO','OVV','PAYC','PCVX','PFSI','PINE','PIPR',
-  'PLAY','PLNT','PLRX','POOL','POWL','PRDO','PRFT','PRIM','PRO',
-  'PRTA','PSMT','PTCT','PTGX','PTLO','PUMP','QLYS','RCKT','RDFN',
-  'REAL','REXR','RGEN','RGLD','RGR','RIOT','RMBS','ROLL','ROOT',
-  'RXRX','RYAN','SAM','SASR','SBGI','SBRA','SCCO','SDGR','SE',
-  'SEIC','SHAK','SHLS','SILK','SIRI','SITM','SKYW','SLAB','SLVM',
-  'SMPL','SMTC','SNV','SONO','SPCE','SPFI','SPLK','SPOT','SQSP','SRCL',
-  'STAA','STRL','SUMO','TASK','TBLA','TBRG','TCBI','TDTX','TELL',
-  'TGTX','TILE','TMDX','TMHC','TPVG','TRN','TRNO','TROX','TRVI',
-  'TSEM','TSVT','TTEC','TTGT','TXRH','U','UHAL','ULCC','ULTA','UMBF',
-  'UNFI','UNIT','UPWK','URBN','USFD','UVSP','VBTX','VC','VCEL',
-  'VECO','VERA','VERI','VICR','VIRT','VITL','VLTO','VRNS','VRNT',
-  'VRRM','VSCO','VSTO','VTOL','VYGR','WDAY','WEN','WERN','WIRE',
-  'WOLF','WRAP','WSFS','XPO','XRAY','YM','ZG','ZGNX','ZI','ZM','ZUMZ','ZUO',
 ])];
 
-// Ticker name hints for dropdown display
 const TICKER_NAMES = {
   'AAPL':'Apple','MSFT':'Microsoft','NVDA':'NVIDIA','AMZN':'Amazon','META':'Meta',
   'GOOGL':'Alphabet','GOOG':'Alphabet C','TSLA':'Tesla','AVGO':'Broadcom','LLY':'Eli Lilly',
@@ -678,11 +798,11 @@ const TICKER_NAMES = {
   'NFLX':'Netflix','BAC':'Bank of America','CRM':'Salesforce','MRK':'Merck','CVX':'Chevron',
   'ORCL':'Oracle','PEP':'PepsiCo','TMO':'Thermo Fisher','ADBE':'Adobe','KO':'Coca-Cola',
   'AMD':'AMD','WMT':'Walmart','CSCO':'Cisco','ACN':'Accenture','ABT':'Abbott','IBM':'IBM',
-  'MCD':'McDonald\'s','GE':'GE Aerospace','CAT':'Caterpillar','INTU':'Intuit',
+  'MCD':"McDonald's",'GE':'GE Aerospace','CAT':'Caterpillar','INTU':'Intuit',
   'NOW':'ServiceNow','QCOM':'Qualcomm','TXN':'Texas Instruments','AMGN':'Amgen',
   'PM':'Philip Morris','DHR':'Danaher','VZ':'Verizon','SPGI':'S&P Global','NEE':'NextEra',
   'MS':'Morgan Stanley','RTX':'Raytheon','GS':'Goldman Sachs','ISRG':'Intuitive Surgical',
-  'T':'AT&T','BKNG':'Booking Holdings','AXP':'Amex','BLK':'BlackRock','LOW':'Lowe\'s',
+  'T':'AT&T','BKNG':'Booking Holdings','AXP':'Amex','BLK':'BlackRock','LOW':"Lowe's",
   'AMAT':'Applied Materials','SYK':'Stryker','C':'Citigroup','GILD':'Gilead','MDT':'Medtronic',
   'MMC':'Marsh McLennan','CB':'Chubb','SCHW':'Schwab','ETN':'Eaton','ZTS':'Zoetis',
   'ADP':'ADP','VRTX':'Vertex','PGR':'Progressive','PANW':'Palo Alto','LRCX':'Lam Research',
@@ -690,11 +810,11 @@ const TICKER_NAMES = {
   'ADI':'Analog Devices','CME':'CME Group','KLAC':'KLA Corp','EW':'Edwards Lifesciences',
   'CI':'Cigna','INTC':'Intel','DUK':'Duke Energy','SO':'Southern Co','NOC':'Northrop',
   'BDX':'BD','SHW':'Sherwin-Williams','MMM':'3M','GD':'General Dynamics','ITW':'Illinois Tool',
-  'TJX':'TJX','ICE':'ICE','PLD':'Prologis','MCO':'Moody\'s','EOG':'EOG Resources',
+  'TJX':'TJX','ICE':'ICE','PLD':'Prologis','MCO':"Moody's",'EOG':'EOG Resources',
   'APD':'Air Products','USB':'US Bancorp','CTAS':'Cintas','HCA':'HCA Healthcare',
   'FDX':'FedEx','CL':'Colgate','CCI':'Crown Castle','PNC':'PNC Financial',
   'EMR':'Emerson','CARR':'Carrier','MPC':'Marathon Petroleum','COF':'Capital One',
-  'WM':'Waste Management','ORLY':'O\'Reilly Auto','FCX':'Freeport-McMoRan',
+  'WM':'Waste Management','ORLY':"O'Reilly Auto",'FCX':'Freeport-McMoRan',
   'MSI':'Motorola Solutions','GWW':'W.W. Grainger','NSC':'Norfolk Southern',
   'CMG':'Chipotle','PCAR':'PACCAR','PSA':'Public Storage','WELL':'Welltower',
   'SPG':'Simon Property','O':'Realty Income','AMT':'American Tower',
@@ -725,7 +845,7 @@ const TICKER_NAMES = {
   'PYPL':'PayPal','SQ':'Block','COIN':'Coinbase','HOOD':'Robinhood',
   'SOFI':'SoFi','UPST':'Upstart','AFRM':'Affirm','ALLY':'Ally Financial',
   'IBKR':'Interactive Brokers','BK':'BNY Mellon','STT':'State Street',
-  'MRNA':'Moderna','PFE':'Pfizer','LLY':'Eli Lilly','GILD':'Gilead',
+  'MRNA':'Moderna','PFE':'Pfizer','GILD':'Gilead',
   'DXCM':'Dexcom','ILMN':'Illumina','IOVA':'Iovance','BEAM':'Beam Therapeutics',
   'EDIT':'Editas','CRSP':'CRISPR','NTLA':'Intellia','ARVN':'Arvinas','RXRX':'Recursion',
   'EXAS':'Exact Sciences','NTRA':'Natera','HOLX':'Hologic','MOH':'Molina',
@@ -735,14 +855,14 @@ const TICKER_NAMES = {
   'ETSY':'Etsy','EBAY':'eBay','W':'Wayfair','CVNA':'Carvana','KMX':'CarMax',
   'ROST':'Ross Stores','BURL':'Burlington','FIVE':'Five Below','DG':'Dollar General',
   'DLTR':'Dollar Tree','KR':'Kroger','SFM':'Sprouts Farmers',
-  'YUM':'Yum! Brands','DPZ':'Domino\'s','QSR':'Restaurant Brands','CMG':'Chipotle',
+  'YUM':'Yum! Brands','DPZ':"Domino's",'QSR':'Restaurant Brands','CMG':'Chipotle',
   'F':'Ford','GM':'General Motors','RIVN':'Rivian','LCID':'Lucid','FSR':'Fisker',
   'UAL':'United Airlines','DAL':'Delta','AAL':'American Airlines','LUV':'Southwest',
   'ALK':'Alaska Air','JBLU':'JetBlue','EXPE':'Expedia',
   'CCL':'Carnival','RCL':'Royal Caribbean','NCLH':'Norwegian Cruise','MAR':'Marriott','HLT':'Hilton',
   'DKNG':'DraftKings','PENN':'Penn Entertainment',
   'BA':'Boeing','LMT':'Lockheed Martin','NOC':'Northrop Grumman','HII':'Huntington Ingalls',
-  'TDG':'TransDigm','FDX':'FedEx','UPS':'UPS','XPO':'XPO','SAIA':'Saia','JBHT':'J.B. Hunt',
+  'TDG':'TransDigm','UPS':'UPS','XPO':'XPO','SAIA':'Saia','JBHT':'J.B. Hunt',
   'UNP':'Union Pacific','HON':'Honeywell','CMI':'Cummins',
   'PLUG':'Plug Power','FCEL':'FuelCell','BLNK':'Blink Charging','CHPT':'ChargePoint','EVGO':'EVgo',
   'CMCSA':'Comcast','PARA':'Paramount','WBD':'Warner Bros Discovery',
@@ -799,10 +919,69 @@ const S = {
     token: localStorage.getItem('accountToken') || '',
     loggedIn: false,
     watchlistLoaded: false,
-  }
+  },
+  mobilePanel: 'picks', // picks | chart | analysis
 };
 
-document.addEventListener('DOMContentLoaded', () => { applySettings(); syncAccountUi(); if (S.account.token || S.account.username) { loadAccount(true).catch(()=>{}); } refresh(); startAutoRefresh(); });
+document.addEventListener('DOMContentLoaded', () => {
+  applySettings();
+  syncAccountUi();
+  initMobileNav();
+  if (S.account.token || S.account.username) { loadAccount(true).catch(()=>{}); }
+  refresh();
+  startAutoRefresh();
+});
+
+// ════════════════════════════════════════════════════════
+// MOBILE NAV
+// ════════════════════════════════════════════════════════
+function isMobile() {
+  return window.matchMedia('(max-width:600px)').matches ||
+    (window.matchMedia('(max-width:900px)').matches && window.matchMedia('(max-height:480px)').matches);
+}
+
+function initMobileNav() {
+  if (!isMobile()) return;
+  switchMobilePanel('picks');
+}
+
+function switchMobilePanel(panel) {
+  if (!isMobile()) return;
+  S.mobilePanel = panel;
+  // Update panel visibility
+  document.getElementById('left-panel').classList.remove('mob-active');
+  document.getElementById('center-panel').classList.remove('mob-active');
+  document.getElementById('right-panel').classList.remove('mob-active');
+  if (panel === 'picks') document.getElementById('left-panel').classList.add('mob-active');
+  else if (panel === 'chart') document.getElementById('center-panel').classList.add('mob-active');
+  else if (panel === 'analysis') document.getElementById('right-panel').classList.add('mob-active');
+  // Update nav buttons
+  ['picks','chart','analysis','settings'].forEach(p => {
+    const btn = document.getElementById('mnav-' + p);
+    if (btn) btn.classList.toggle('active', p === panel);
+  });
+  // Load news when switching to analysis
+  if (panel === 'analysis' && (!S.allNews || !S.allNews.length)) {
+    loadNewsFallback().catch(()=>{});
+  }
+}
+
+function showMobileMenu() {
+  document.getElementById('mobile-menu-modal').classList.add('open');
+}
+
+// Handle orientation change: re-apply correct layout
+window.addEventListener('resize', () => {
+  if (isMobile()) {
+    // Re-apply mobile panel, ensure correct panel is shown
+    switchMobilePanel(S.mobilePanel);
+  } else {
+    // Desktop: restore all panels
+    document.getElementById('left-panel').classList.remove('mob-active');
+    document.getElementById('center-panel').classList.remove('mob-active');
+    document.getElementById('right-panel').classList.remove('mob-active');
+  }
+});
 
 function applySettings() {
   document.getElementById('api-key-input').value  = S.apiKey;
@@ -811,12 +990,12 @@ function applySettings() {
 }
 
 // ════════════════════════════════════════════════════════
-// CACHE — survive page reloads, show data instantly
+// CACHE
 // ════════════════════════════════════════════════════════
 const CACHE_KEY  = 'mp_quotes_v3';
 const NEWS_KEY   = 'mp_news_v3';
-const CACHE_TTL  = 5 * 60 * 1000;   // 5 min — show as "live"
-const CACHE_STALE= 30 * 60 * 1000;  // 30 min — show as stale but usable
+const CACHE_TTL  = 5 * 60 * 1000;
+const CACHE_STALE= 30 * 60 * 1000;
 
 function saveCache(quotes, news) {
   try {
@@ -853,7 +1032,6 @@ function startAutoRefresh() {
 function manualRefresh() { refresh(false); }
 
 async function refresh(background=false) {
-  // 1. Show cached data immediately (zero-wait UX)
   const cached = loadCache();
   if (cached && !cached.stale && Object.keys(S.quotes).length === 0) {
     cached.data.forEach(q => { S.quotes[q.symbol] = q; });
@@ -869,7 +1047,6 @@ async function refresh(background=false) {
     setStatus(`Cached ${ageMin}m ago — refreshing…`, 'loading');
   }
 
-  // 2. No GAS URL configured → show setup guide
   if (!S.gasUrl) {
     showSetupBanner(true);
     setStatus('Setup required', 'err');
@@ -878,14 +1055,12 @@ async function refresh(background=false) {
 
   setStatus('Fetching live data…', 'loading');
   try {
-    // Single request for all quotes (no URL-length issues, no batching needed)
     const [quotesData, newsData] = await Promise.all([
       fetchAllQuotes(),
       fetchNews('')
     ]);
 
     if (!quotesData.length && !cached) {
-      // Sheet not populated yet
       showSetupBanner(false);
       setStatus('No data — sheet may still be loading', 'err');
       return;
@@ -896,7 +1071,6 @@ async function refresh(background=false) {
     S.allNews = newsData;
     saveCache(quotesData, newsData);
 
-    // Merge watchlist tickers not in universe (fetch on-demand if needed)
     const wlMissing = S.watchlist.filter(s => !S.quotes[s]);
     if (wlMissing.length && S.gasUrl) {
       fetchSpecific(wlMissing).then(extra => {
@@ -942,7 +1116,6 @@ async function refresh(background=false) {
   }
 }
 
-// Single call that gets ALL quotes from the GOOGLEFINANCE sheet at once
 async function fetchAllQuotes() {
   if (!S.gasUrl) return [];
   const res = await fetch(S.gasUrl + '?action=allquotes&_=' + Date.now());
@@ -952,7 +1125,6 @@ async function fetchAllQuotes() {
   return (data.quoteResponse && data.quoteResponse.result) || [];
 }
 
-// Fetch specific tickers on-demand (watchlist / search)
 async function fetchSpecific(symbols) {
   if (!S.gasUrl || !symbols.length) return [];
   try {
@@ -989,7 +1161,6 @@ async function loadNewsFallback() {
   return [];
 }
 
-// Initialize the GOOGLEFINANCE sheet (one-time setup)
 async function initDataSheet() {
   if (!S.gasUrl) { toast('Enter your GAS URL in Settings first', 'err'); return; }
   const btn = document.getElementById('init-sheet-btn');
@@ -1002,7 +1173,7 @@ async function initDataSheet() {
       toast(`Sheet created with ${data.tickers} tickers. Wait 60s then Refresh.`, 'ok');
       setStatus('Sheet created — wait 60s then Refresh', 'live');
       document.getElementById('setup-wait').style.display = 'block';
-      setTimeout(() => { refresh(); }, 70000); // auto-refresh after 70s
+      setTimeout(() => { refresh(); }, 70000);
     } else {
       toast('Setup failed: ' + (data.message || 'unknown error'), 'err');
       setStatus('Setup failed', 'err');
@@ -1040,7 +1211,7 @@ function scoreStock(q, spyChg) {
   const wkL   = q.fiftyTwoWeekLow  || price;
   const wkPos = (wkH-wkL) > 0 ? (price-wkL)/(wkH-wkL) : 0.5;
 
-  s += clamp(chg * 3.8, -22, 22);          // momentum
+  s += clamp(chg * 3.8, -22, 22);
   const vr = vol/avg;
   if      (vr > 5)   s += 18;
   else if (vr > 3)   s += 13;
@@ -1105,7 +1276,6 @@ function scoreAndRank(spyChg, wl) {
       const chg = Math.abs(q.regularMarketChangePercent||0);
       const vol = q.regularMarketVolume||0;
       const avg = q.averageDailyVolume3Month||0;
-      // Only apply volume ratio if avg is reliably different from current vol
       const vr = (avg > 0 && Math.abs(avg - vol) > vol * 0.05) ? vol/avg : 1.5;
       return chg > 1 && vr > 1.0;
     })
@@ -1233,8 +1403,7 @@ function buildAlerts() {
     .forEach(q => {
       const chg = q.regularMarketChangePercent || 0;
       S.alerts.push({
-        ticker: q.symbol,
-        chg,
+        ticker: q.symbol, chg,
         label: `${chg >= 0 ? '+' : ''}${fmt2(chg)}%`,
         type: chg >= 0 ? 'bull' : 'bear',
         color: chg >= 0 ? 'var(--green)' : 'var(--red)'
@@ -1377,16 +1546,17 @@ function selectPick(ticker) {
   loadChart(ticker);
   updateTradeDisplay(ticker);
   triggerAnalysis(ticker);
-  if (S.activeRtab !== 'analysis') switchRtab('analysis');
+  // On mobile: switch to chart panel after selecting
+  if (isMobile()) switchMobilePanel('chart');
+  else if (S.activeRtab !== 'analysis') switchRtab('analysis');
 }
+
 async function loadChartFromSearch() {
   hideDropdown();
   const v = document.getElementById('chart-search').value.trim().toUpperCase();
   if (!v) return;
-  // Save previous stock to badge
   if (S.chart.ticker && S.chart.ticker !== v) setPrevStockBadge(S.chart.ticker);
   S.chart.ticker = v;
-  // Fetch quote on-demand if not already in state
   if (!S.quotes[v] && S.gasUrl) {
     setStatus('Fetching ' + v + '…', 'loading');
     try {
@@ -1419,7 +1589,6 @@ function setPrevStockBadge(ticker) {
   badge.title = 'Click to reload ' + ticker;
 }
 
-// ════════════════ SEARCH DROPDOWN ════════════════
 let _sdFocusIdx = -1;
 function onSearchInput() {
   const val = document.getElementById('chart-search').value.trim().toUpperCase();
@@ -1429,7 +1598,6 @@ function onSearchInput() {
     .sort((a,b) => {
       const aStart = a.startsWith(val)?0:1, bStart = b.startsWith(val)?0:1;
       if (aStart !== bStart) return aStart-bStart;
-      // Prioritize tickers with live quote data
       const aQ = S.quotes[a]?0:1, bQ = S.quotes[b]?0:1;
       return aQ-bQ || a.localeCompare(b);
     }).slice(0,12);
@@ -1475,6 +1643,7 @@ function pickDropdown(ticker) {
   loadChartFromSearch();
 }
 function hideDropdown() { document.getElementById('search-dropdown').style.display='none'; }
+
 function loadChart(ticker) {
   const frame = document.getElementById('chart-frame');
   frame.src = `https://s.tradingview.com/widgetembed/?frameElementId=tv_chart&symbol=${encodeURIComponent(ticker)}&interval=${S.chart.range}&hidetoptoolbar=0&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=060a0f&studies=[]&theme=dark&style=1&timezone=America%2FNew_York&locale=en&hide_side_toolbar=1&allow_symbol_change=0&details=1`;
@@ -1512,6 +1681,7 @@ function loadChart(ticker) {
     }
   }
 }
+
 function setRange(range) {
   S.chart.range = range;
   document.querySelectorAll('.range-btn').forEach(b => b.classList.toggle('active', b.dataset.range === range));
@@ -1805,7 +1975,6 @@ async function syncToSheets() {
 // ════════════════════════════════════════════════════════
 // MODALS
 // ════════════════════════════════════════════════════════
-
 function showAccount() {
   document.getElementById('acct-user-input').value = S.account.username || localStorage.getItem('accountUsername') || '';
   document.getElementById('acct-pass-input').value = '';
