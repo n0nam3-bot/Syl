@@ -1045,7 +1045,6 @@ function manualRefresh() { refresh(false); }
 async function refresh(background=false) {
   if (S.refreshing) return;
   S.refreshing = true;
-  try {
   const cached = loadCache();
   if (cached && !cached.stale && Object.keys(S.quotes).length === 0) {
     cached.data.forEach(q => { S.quotes[q.symbol] = q; });
