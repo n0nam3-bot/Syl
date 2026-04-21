@@ -912,7 +912,8 @@ const S = {
   activeTab:'top', activeRtab:'analysis', newsFilter:'all',
   chart:{ ticker:null, range:'D' },
   currentAnalysis:null, currentNews:[],
-  refreshTimer:null, syncing:false,
+  refreshTimer:null, syncing:false, refreshing:false,
+  lastSyncAt:0, lastSyncHash:'',
   alerts:[], sectorPerf:{}, mps:50,
   account:{
     username: localStorage.getItem('accountUsername') || '',
@@ -1025,13 +1026,26 @@ function loadNewsCache() {
 // REFRESH
 // ════════════════════════════════════════════════════════
 function startAutoRefresh() {
-  if (S.refreshTimer) clearInterval(S.refreshTimer);
+  if (S.refreshTimer) clearTimeout(S.refreshTimer);
   if (!S.refreshMs) return;
-  S.refreshTimer = setInterval(() => refresh(true), S.refreshMs);
+
+  const scheduleNext = () => {
+    const base = Math.max(30000, S.refreshMs || 300000);
+    const jitter = Math.round(base * (0.85 + Math.random() * 0.30));
+    S.refreshTimer = setTimeout(async () => {
+      try { await refresh(true); } catch(e) {}
+      if (S.refreshMs) scheduleNext();
+    }, jitter);
+  };
+
+  scheduleNext();
 }
 function manualRefresh() { refresh(false); }
 
 async function refresh(background=false) {
+  if (S.refreshing) return;
+  S.refreshing = true;
+  try {
   const cached = loadCache();
   if (cached && !cached.stale && Object.keys(S.quotes).length === 0) {
     cached.data.forEach(q => { S.quotes[q.symbol] = q; });
@@ -1096,7 +1110,7 @@ async function refresh(background=false) {
       if (!background) triggerAnalysis(S.chart.ticker);
     }
 
-    syncToSheets();
+    if (!background) syncToSheets();
     const now = new Date();
     document.getElementById('last-t').textContent = fmtTime(now);
     if (S.refreshMs) document.getElementById('next-t').textContent = fmtTime(new Date(now.getTime() + S.refreshMs));
@@ -1113,6 +1127,8 @@ async function refresh(background=false) {
       setStatus('Error: ' + err.message.slice(0, 35), 'err');
       showSetupBanner(false);
     }
+  } finally {
+    S.refreshing = false;
   }
 }
 
@@ -1960,10 +1976,22 @@ function renderNews(articles) {
 // SHEETS SYNC
 // ════════════════════════════════════════════════════════
 async function syncToSheets() {
-  if (!S.gasUrl||S.syncing||!S.picks.top.length) return;
-  S.syncing=true;
+  if (!S.gasUrl || S.syncing || !S.picks.top.length) return;
+
+  const payload = {
+    generatedAt: new Date().toISOString(),
+    topPicks: S.picks.top,
+    highRewardPicks: S.picks.hr
+  };
+  const hash = JSON.stringify(payload.topPicks) + '|' + JSON.stringify(payload.highRewardPicks);
+  const now = Date.now();
+  if (S.lastSyncHash === hash && (now - (S.lastSyncAt || 0)) < 120000) return;
+
+  S.syncing = true;
   try {
-    await fetch(S.gasUrl,{method:'POST',body:JSON.stringify({generatedAt:new Date().toISOString(),topPicks:S.picks.top,highRewardPicks:S.picks.hr})});
+    await fetch(S.gasUrl, { method:'POST', body: JSON.stringify(payload) });
+    S.lastSyncHash = hash;
+    S.lastSyncAt = now;
     document.getElementById('sheets-dot').className='ok';
     document.getElementById('sheets-txt').textContent='Sheets: synced '+fmtTime(new Date());
   } catch {
