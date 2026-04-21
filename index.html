@@ -296,7 +296,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   body.mobile-content #header,
   body.mobile-content #alert-bar,
   body.mobile-content #statbar{display:none}
-  body.mobile-content #main{display:block}
+  body.mobile-content #main{display:block;height:calc(100dvh - var(--mob-nav-h));}
 
   /* Dashboard fills the mobile screen better */
   body.mobile-dashboard #header{
@@ -316,6 +316,8 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   body.mobile-dashboard #header #live-badge{order:4;padding:3px 6px}
   body.mobile-dashboard #header .hbtn{display:inline-flex;font-size:10px;padding:7px 9px;flex:1 1 calc(50% - 4px);min-width:0}
   body.mobile-dashboard #header .hbtn.primary{flex:1 1 100%}
+  body.mobile-dashboard #header .hbtn[onclick*='showAccount'],
+  body.mobile-dashboard #header .hbtn[onclick*='showWatchlist']{display:none}
   body.mobile-dashboard .mobile-dash-btn{display:none}
 
   body.mobile-dashboard #alert-bar{height:clamp(24px, 6dvh, 34px)}
@@ -324,10 +326,10 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 
   body.mobile-dashboard #statbar{
     height:auto;
-    min-height:clamp(108px, 28dvh, 170px);
+    min-height:clamp(124px, 32dvh, 210px);
     flex-wrap:wrap;
   }
-  body.mobile-dashboard .stat-cell{min-width:33.333%;flex:1 1 33.333%;padding:10px 8px}
+  body.mobile-dashboard .stat-cell{min-width:33.333%;flex:1 1 33.333%;padding:12px 8px}
   body.mobile-dashboard .stat-val{font-size:14px}
   body.mobile-dashboard .stat-lbl{font-size:7px}
   body.mobile-dashboard .stat-sub{font-size:8px}
@@ -358,7 +360,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   /* Main container: full height minus nav */
   #main{
     display:block;
-    height:calc(100dvh - var(--mobile-header-h) - 22px - 42px - var(--mob-nav-h));
+    height:calc(100dvh - var(--mob-nav-h));
     overflow:hidden;
     position:relative;
   }
@@ -408,7 +410,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   /* Right panel */
   #rtab-bar{display:none !important}
   .rtab{font-size:9px;padding:5px 4px}
-  #right-content{padding:8px}
+  #right-content{padding:8px 8px 0}
   .news-title{font-size:11px}
   .news-meta{font-size:9px}
 
@@ -455,10 +457,12 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   body.mobile-dashboard #header #live-badge{order:4;padding:2px 5px}
   body.mobile-dashboard #header .hbtn{display:inline-flex;font-size:9px;padding:6px 8px;flex:1 1 calc(50% - 3px);min-width:0}
   body.mobile-dashboard #header .hbtn.primary{flex:1 1 100%}
+  body.mobile-dashboard #header .hbtn[onclick*='showAccount'],
+  body.mobile-dashboard #header .hbtn[onclick*='showWatchlist']{display:none}
   body.mobile-dashboard .mobile-dash-btn{display:none}
   body.mobile-dashboard #alert-bar{height:clamp(22px, 6dvh, 30px)}
-  body.mobile-dashboard #statbar{height:auto;min-height:clamp(88px, 22dvh, 135px);flex-wrap:wrap}
-  body.mobile-dashboard .stat-cell{min-width:33.333%;flex:1 1 33.333%;padding:8px 6px}
+  body.mobile-dashboard #statbar{height:auto;min-height:clamp(112px, 28dvh, 165px);flex-wrap:wrap}
+  body.mobile-dashboard .stat-cell{min-width:33.333%;flex:1 1 33.333%;padding:10px 7px}
   body.mobile-dashboard .stat-val{font-size:13px}
   body.mobile-dashboard .stat-sub{font-size:7px}
   #header{height:36px;padding:4px 8px;gap:5px}
@@ -467,7 +471,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   .stat-cell{padding:3px 7px;min-width:55px}
   .stat-val{font-size:10px}
   .stat-sub{display:none}
-  #main{height:calc(100dvh - var(--mobile-header-h) - 20px - 32px - var(--mob-nav-h));display:block;overflow:hidden;position:relative}
+  #main{height:calc(100dvh - var(--mob-nav-h));display:block;overflow:hidden;position:relative}
   #left-panel,#center-panel,#right-panel{position:absolute;inset:0;width:100% !important;height:100% !important;border:none !important;display:none;flex-direction:column}
   #left-panel.mob-active{display:flex}
   #center-panel.mob-active{display:flex}
