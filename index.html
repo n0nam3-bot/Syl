@@ -291,6 +291,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   <div class="spacer"></div>
   <div id="time-wrap"><span id="last-t">—</span> · next <span id="next-t">—</span></div>
   <button class="hbtn" onclick="showSettings()">⚙ Settings</button>
+  <button class="hbtn" onclick="showAccount()">👤 Account</button>
   <button class="hbtn" onclick="showWatchlist()">☰ Watchlist</button>
   <button class="hbtn primary" onclick="manualRefresh()">↻ Refresh</button>
 </div>
@@ -426,6 +427,43 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   <div class="spacer"></div>
   <span>Yahoo Finance · TradingView · Free &amp; Open · v3.0</span>
 </div>
+
+
+<!-- ACCOUNT MODAL -->
+<div class="modal-bg" id="account-modal">
+  <div class="modal">
+    <div class="modal-header">👤 Account<button class="modal-close" onclick="closeModal('account-modal')">✕</button></div>
+    <div class="modal-body">
+      <div class="ss-sec">
+        <div class="ss-title">Create / Sign in</div>
+        <div class="fg">
+          <label class="fl">Username</label>
+          <input id="acct-user-input" type="text" class="fi" placeholder="username" autocomplete="username"/>
+          <div class="fh">Letters, numbers, underscore, dot, or dash.</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Password</label>
+          <input id="acct-pass-input" type="password" class="fi" placeholder="minimum 4 characters" autocomplete="current-password"/>
+          <div class="fh">Passwords are stored as a salted hash in Google Sheets.</div>
+        </div>
+        <div class="fg">
+          <label class="fl">Saved watchlist</label>
+          <textarea id="acct-wl-input" class="fi fta" placeholder="Sign in to load your watchlist"></textarea>
+          <div class="fh">Your watchlist can sync across devices once you sign in.</div>
+        </div>
+        <div id="acct-status" style="font-size:10px;font-family:var(--font-mono);color:var(--txt3);margin-top:4px">Not signed in.</div>
+      </div>
+    </div>
+    <div class="modal-footer" style="flex-wrap:wrap">
+      <button class="btn-c" onclick="logoutAccount()">Logout</button>
+      <button class="btn-c" onclick="loadAccount()">Load</button>
+      <button class="btn-c" onclick="saveAccountWatchlist()">Save Watchlist</button>
+      <button class="btn-s" onclick="registerAccount()">Create Account</button>
+      <button class="btn-s" onclick="loginAccount()">Sign In</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- WATCHLIST MODAL -->
 <div class="modal-bg" id="watchlist-modal">
@@ -756,9 +794,15 @@ const S = {
   currentAnalysis:null, currentNews:[],
   refreshTimer:null, syncing:false,
   alerts:[], sectorPerf:{}, mps:50,
+  account:{
+    username: localStorage.getItem('accountUsername') || '',
+    token: localStorage.getItem('accountToken') || '',
+    loggedIn: false,
+    watchlistLoaded: false,
+  }
 };
 
-document.addEventListener('DOMContentLoaded', () => { applySettings(); refresh(); startAutoRefresh(); });
+document.addEventListener('DOMContentLoaded', () => { applySettings(); syncAccountUi(); if (S.account.token || S.account.username) { loadAccount(true).catch(()=>{}); } refresh(); startAutoRefresh(); });
 
 function applySettings() {
   document.getElementById('api-key-input').value  = S.apiKey;
@@ -869,6 +913,9 @@ async function refresh(background=false) {
 
     renderStats(); renderPicks(); renderAlertBar();
     renderSectorHeatmap(); renderMarketOverview(); renderNews(newsData);
+    if (!newsData || !newsData.length) {
+      loadNewsFallback().catch(()=>{});
+    }
 
     if (S.chart.ticker && S.quotes[S.chart.ticker]) {
       updateTradeDisplay(S.chart.ticker);
@@ -922,6 +969,23 @@ async function fetchNews(symsStr) {
     const data = await res.json();
     return (data && data.articles) || [];
   } catch { return []; }
+}
+async function loadNewsFallback() {
+  try {
+    const cached = loadNewsCache();
+    if (cached && cached.data && cached.data.length) {
+      S.allNews = cached.data;
+      renderNews(cached.data);
+      return cached.data;
+    }
+    const data = await fetchNews([...new Set([S.chart.ticker, ...S.watchlist.slice(0, 3)])].filter(Boolean).join(','));
+    if (Array.isArray(data) && data.length) {
+      S.allNews = data;
+      renderNews(data);
+      return data;
+    }
+  } catch {}
+  return [];
 }
 
 // Initialize the GOOGLEFINANCE sheet (one-time setup)
@@ -1683,6 +1747,7 @@ function filterNews(f) {
     btn.className = 'tab-btn' + (x === f ? (f === 'bear' ? ' t-hr' : ' t-top') : '');
   });
   renderNews(S.allNews);
+  if ((tab === 'news') && (!S.allNews || !S.allNews.length)) loadNewsFallback().catch(()=>{});
 }
 
 function renderNews(articles) {
@@ -1729,8 +1794,151 @@ async function syncToSheets() {
 // ════════════════════════════════════════════════════════
 // MODALS
 // ════════════════════════════════════════════════════════
+
+function showAccount() {
+  document.getElementById('acct-user-input').value = S.account.username || localStorage.getItem('accountUsername') || '';
+  document.getElementById('acct-pass-input').value = '';
+  document.getElementById('acct-wl-input').value = S.watchlist.join(', ');
+  syncAccountUi();
+  document.getElementById('account-modal').classList.add('open');
+}
+function syncAccountUi() {
+  const el = document.getElementById('acct-status');
+  if (!el) return;
+  if (S.account.loggedIn && S.account.username) el.textContent = `Signed in as ${S.account.username}`;
+  else if (S.account.username) el.textContent = `Saved username: ${S.account.username}`;
+  else el.textContent = 'Not signed in.';
+}
+function setAccountState(username, token) {
+  S.account.username = username || '';
+  S.account.token = token || '';
+  S.account.loggedIn = !!(username && token);
+  S.account.watchlistLoaded = true;
+  localStorage.setItem('accountUsername', S.account.username);
+  localStorage.setItem('accountToken', S.account.token);
+  syncAccountUi();
+}
+function clearAccountState() {
+  S.account.username = '';
+  S.account.token = '';
+  S.account.loggedIn = false;
+  S.account.watchlistLoaded = false;
+  localStorage.removeItem('accountUsername');
+  localStorage.removeItem('accountToken');
+  syncAccountUi();
+}
+async function accountApi(action, payload={}) {
+  if (!S.gasUrl) throw new Error('Set your Google Apps Script URL first');
+  const res = await fetch(S.gasUrl, {
+    method: 'POST',
+    body: JSON.stringify({ action, ...payload })
+  });
+  const data = await res.json();
+  if (data && data.success === false) throw new Error(data.error || 'Account request failed');
+  if (data && data.error) throw new Error(data.error);
+  return data;
+}
+function normalizeUsername() { return document.getElementById('acct-user-input').value.trim(); }
+function normalizePassword() { return document.getElementById('acct-pass-input').value; }
+function getWatchlistFromText(text) {
+  return (text || '').split(/[\s,]+/).map(s => s.trim().toUpperCase()).filter(Boolean);
+}
+async function registerAccount() {
+  const username = normalizeUsername();
+  const password = normalizePassword();
+  if (!username) { toast('Enter a username', 'err'); return; }
+  if (!/^[A-Za-z0-9_.-]{3,20}$/.test(username)) { toast('Username must be 3-20 chars', 'err'); return; }
+  if (!password || password.length < 4) { toast('Password must be at least 4 characters', 'err'); return; }
+  const parsed = getWatchlistFromText(document.getElementById('acct-wl-input').value);
+  const watchlist = parsed.length ? parsed : S.watchlist;
+  try {
+    const data = await accountApi('accountRegister', { username, password, watchlist });
+    setAccountState(data.username || username, data.token || '');
+    if (Array.isArray(data.watchlist) && data.watchlist.length) {
+      S.watchlist = data.watchlist;
+      localStorage.setItem('watchlist', JSON.stringify(S.watchlist));
+    }
+    document.getElementById('wl-input').value = S.watchlist.join(', ');
+    document.getElementById('acct-wl-input').value = S.watchlist.join(', ');
+    toast('Account created', 'ok');
+    closeModal('account-modal');
+    refresh();
+  } catch (err) { toast(err.message || 'Could not create account', 'err'); }
+}
+async function loginAccount() {
+  const username = normalizeUsername();
+  const password = normalizePassword();
+  if (!username) { toast('Enter your username', 'err'); return; }
+  if (!password || password.length < 4) { toast('Enter your password', 'err'); return; }
+  try {
+    const data = await accountApi('accountLogin', { username, password });
+    setAccountState(data.username || username, data.token || '');
+    if (Array.isArray(data.watchlist)) {
+      S.watchlist = data.watchlist;
+      localStorage.setItem('watchlist', JSON.stringify(S.watchlist));
+    }
+    document.getElementById('wl-input').value = S.watchlist.join(', ');
+    document.getElementById('acct-wl-input').value = S.watchlist.join(', ');
+    toast('Signed in', 'ok');
+    closeModal('account-modal');
+    refresh();
+  } catch (err) { toast(err.message || 'Login failed', 'err'); }
+}
+async function loadAccount(silent=false) {
+  try {
+    const username = (S.account.username || localStorage.getItem('accountUsername') || '').trim();
+    const token = (S.account.token || localStorage.getItem('accountToken') || '').trim();
+    if (!username) return null;
+    const data = await accountApi('accountLoad', token ? { username, token } : { username });
+    if (data && data.username) setAccountState(data.username, data.token || token);
+    if (Array.isArray(data.watchlist)) {
+      S.watchlist = data.watchlist;
+      localStorage.setItem('watchlist', JSON.stringify(S.watchlist));
+      document.getElementById('wl-input').value = S.watchlist.join(', ');
+      document.getElementById('acct-wl-input').value = S.watchlist.join(', ');
+    }
+    if (!silent) toast('Account loaded', 'ok');
+    return data;
+  } catch (err) {
+    if (!silent) toast(err.message || 'Load failed', 'err');
+    clearAccountState();
+    return null;
+  }
+}
+async function saveAccountWatchlist() {
+  const wl = getWatchlistFromText(document.getElementById('acct-wl-input').value);
+  if (!wl.length) { toast('Add at least one ticker', 'err'); return; }
+  S.watchlist = wl;
+  localStorage.setItem('watchlist', JSON.stringify(S.watchlist));
+  document.getElementById('wl-input').value = S.watchlist.join(', ');
+  if (!S.account.loggedIn) { toast('Watchlist saved locally', 'ok'); refresh(); return; }
+  try {
+    const data = await accountApi('accountSaveWatchlist', { username: S.account.username, token: S.account.token, watchlist: wl });
+    if (Array.isArray(data.watchlist)) {
+      S.watchlist = data.watchlist;
+      localStorage.setItem('watchlist', JSON.stringify(S.watchlist));
+    }
+    toast('Watchlist synced', 'ok');
+    refresh();
+  } catch (err) { toast(err.message || 'Sync failed', 'err'); }
+}
+async function logoutAccount() {
+  try { if (S.account.loggedIn) await accountApi('accountLogout', { username: S.account.username, token: S.account.token }); } catch {}
+  clearAccountState();
+  toast('Signed out', 'ok');
+}
+
 function showWatchlist(){document.getElementById('wl-input').value=S.watchlist.join(', ');document.getElementById('watchlist-modal').classList.add('open');}
-function saveWatchlist(){S.watchlist=document.getElementById('wl-input').value.split(/[\s,]+/).map(s=>s.trim().toUpperCase()).filter(Boolean);localStorage.setItem('watchlist',JSON.stringify(S.watchlist));closeModal('watchlist-modal');toast('Watchlist saved');refresh();}
+function saveWatchlist(){
+  S.watchlist=document.getElementById('wl-input').value.split(/[\s,]+/).map(s=>s.trim().toUpperCase()).filter(Boolean);
+  localStorage.setItem('watchlist',JSON.stringify(S.watchlist));
+  const acctWl = document.getElementById('acct-wl-input');
+  if (acctWl) acctWl.value = S.watchlist.join(', ');
+  closeModal('watchlist-modal');
+  toast('Watchlist saved');
+  if (S.account.loggedIn) saveAccountWatchlist().catch(()=>{});
+  refresh();
+}
 function showSettings(){document.getElementById('api-key-input').value=S.apiKey;document.getElementById('refresh-select').value=String(S.refreshMs);document.getElementById('settings-modal').classList.add('open');}
 function saveSettings(){
   S.apiKey=document.getElementById('api-key-input').value.trim();
