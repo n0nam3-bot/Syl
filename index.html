@@ -49,7 +49,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 .hbtn:hover{border-color:var(--blue);color:var(--blue)}
 .hbtn.primary{border-color:var(--green2);color:var(--green);background:rgba(24,224,122,.06)}
 .hbtn.primary:hover{background:rgba(24,224,122,.14)}
-.mobile-menu-btn{display:none}
+.mobile-dash-btn{display:none}
 
 /* ALERT BAR */
 #alert-bar{height:26px;background:var(--bg2);border-bottom:1px solid var(--border);overflow:hidden;display:flex;align-items:center;position:relative}
@@ -263,13 +263,11 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 #setup-howto:hover{color:var(--txt2)}
 
 /* ══ MOBILE BOTTOM NAV ══════════════════════════════════════════ */
-#mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:58px;background:var(--bg2);border-top:1px solid var(--border);z-index:150;padding-bottom:env(safe-area-inset-bottom,0)}
-.mob-nav-btn{flex:1;background:none;border:none;color:var(--txt3);font-family:var(--font-mono);font-size:7px;padding:5px 3px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border-top:2px solid transparent;transition:all .15s;-webkit-tap-highlight-color:transparent;min-width:0}
+#mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:52px;background:var(--bg2);border-top:1px solid var(--border);z-index:150;padding-bottom:env(safe-area-inset-bottom,0)}
+.mob-nav-btn{flex:1;background:none;border:none;color:var(--txt3);font-family:var(--font-mono);font-size:8px;padding:6px 4px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border-top:2px solid transparent;transition:all .15s;-webkit-tap-highlight-color:transparent}
 .mob-nav-btn.active{color:var(--blue);border-top-color:var(--blue)}
-.mob-nav-icon{font-size:16px;line-height:1}
-.mob-nav-label{font-size:7px;letter-spacing:.02em;white-space:nowrap}
-.mob-nav-btn.action{color:var(--txt2)}
-.mob-nav-btn.action:active{transform:translateY(1px)}
+.mob-nav-icon{font-size:18px;line-height:1}
+.mob-nav-label{font-size:8px;letter-spacing:.04em}
 
 /* ══ TABLET ════════════════════════════════════════════════════ */
 @media(max-width:1000px){
@@ -286,7 +284,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 
 /* ══ MOBILE PORTRAIT (≤600px) ═══════════════════════════════════ */
 @media(max-width:600px){
-  :root{--mob-nav-h:58px}
+  :root{--mob-nav-h:52px}
 
   html,body{overflow:hidden;height:100%;height:100dvh}
 
@@ -297,9 +295,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   #time-wrap{display:none}
   #live-badge{padding:2px 5px}
   .hbtn{font-size:9px;padding:3px 6px}
-  .mobile-menu-btn{display:inline-flex}
-  /* Keep only Menu + Refresh visible on tiny screens */
-  .hbtn:not(.primary):not(.mobile-menu-btn){display:none}
+  .mobile-dash-btn{display:inline-flex;align-items:center;justify-content:center;flex:1;min-width:0}
+  /* Hide Settings/Account/Watchlist text labels on tiny screens, keep Refresh */
+  .hbtn:not(.primary):not(.mobile-dash-btn){display:none}
 
   /* Compact alert bar */
   #alert-bar{height:22px}
@@ -378,8 +376,8 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   #toast{bottom:calc(var(--mob-nav-h) + 10px)}
 
   /* Modals full-screen on mobile */
-  .modal{width:100vw;height:100dvh;max-height:100dvh;border-radius:0;position:fixed;inset:0;margin:0;-webkit-overflow-scrolling:touch}
-  .modal-bg.open{align-items:stretch}
+  .modal{width:100vw;max-height:90dvh;border-radius:var(--r2) var(--r2) 0 0;position:fixed;bottom:0;left:0;right:0;margin:0}
+  .modal-bg.open{align-items:flex-end}
   .modal-footer{flex-wrap:wrap;gap:5px}
   .modal-footer button{flex:1;min-width:0}
   .btn-c,.btn-s{font-size:11px;padding:8px 8px}
@@ -390,13 +388,12 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 @media(max-width:900px) and (max-height:480px){
   :root{--mob-nav-h:44px}
   #header{height:36px;padding:4px 8px;gap:5px}
-  .mobile-menu-btn{display:inline-flex}
-  .hbtn:not(.primary):not(.mobile-menu-btn){display:none}
   #alert-bar{height:20px}
   #statbar{height:32px}
   .stat-cell{padding:3px 7px;min-width:55px}
   .stat-val{font-size:10px}
   .stat-sub{display:none}
+  .mobile-dash-btn{display:inline-flex;align-items:center;justify-content:center;flex:1;min-width:0}
   #main{height:calc(100dvh - 36px - 20px - 32px - var(--mob-nav-h));display:block;overflow:hidden;position:relative}
   #left-panel,#center-panel,#right-panel{position:absolute;inset:0;width:100% !important;height:100% !important;border:none !important;display:none;flex-direction:column}
   #left-panel.mob-active{display:flex}
@@ -407,15 +404,11 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   #sector-wrap{height:26px;padding:2px 6px}
   #trade-bar{padding:3px 8px}
   #bottom-bar{display:none}
-  #mobile-nav{display:flex}
+  #mobile-nav{display:flex;height:44px}
   .mob-nav-btn{padding:4px 4px 2px}
   .mob-nav-icon{font-size:15px}
   .mob-nav-label{font-size:7px}
   #toast{bottom:calc(44px + 6px)}
-
-  /* Keep mobile dialogs usable in landscape */
-  .modal{width:100vw;height:100dvh;max-height:100dvh;border-radius:0;position:fixed;inset:0;margin:0;-webkit-overflow-scrolling:touch}
-  .modal-bg.open{align-items:stretch}
 }
 
 @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
@@ -434,6 +427,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     Market<span style="color:var(--green)">Tracker</span>
     <span class="logo-text-sub" style="color:var(--txt3);font-weight:300;font-size:10px">· Daily Picks</span>
   </div>
+  <button class="hbtn primary mobile-dash-btn" onclick="switchMobilePanel('picks')">🏠 Dashboard</button>
   <div id="live-badge"><div id="live-dot" class="loading"></div><span id="live-txt">Starting…</span></div>
   <div id="mps-wrap">
     <span id="mps-lbl">MPS</span>
@@ -445,7 +439,6 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   <button class="hbtn" onclick="showSettings()">⚙ Settings</button>
   <button class="hbtn" onclick="showAccount()">👤 Account</button>
   <button class="hbtn" onclick="showWatchlist()">☰ Watchlist</button>
-  <button class="hbtn mobile-menu-btn" onclick="showMobileMenu()">☰ Menu</button>
   <button class="hbtn primary" onclick="manualRefresh()">↻ Refresh</button>
 </div>
 
@@ -588,17 +581,9 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     <span class="mob-nav-icon">🧠</span>
     <span class="mob-nav-label">Analysis</span>
   </button>
-  <button class="mob-nav-btn action" id="mnav-watchlist" onclick="showWatchlist()">
-    <span class="mob-nav-icon">⭐</span>
-    <span class="mob-nav-label">Watch</span>
-  </button>
-  <button class="mob-nav-btn action" id="mnav-account" onclick="showAccount()">
+  <button class="mob-nav-btn" id="mnav-account" onclick="showAccount()">
     <span class="mob-nav-icon">👤</span>
     <span class="mob-nav-label">Account</span>
-  </button>
-  <button class="mob-nav-btn action" id="mnav-settings" onclick="showSettings()">
-    <span class="mob-nav-icon">⚙</span>
-    <span class="mob-nav-label">Settings</span>
   </button>
 </nav>
 
@@ -709,7 +694,6 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     <div class="modal-body" style="padding:8px">
       <button class="hbtn" style="width:100%;margin-bottom:8px;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');showSettings()">⚙ Settings</button>
       <button class="hbtn" style="width:100%;margin-bottom:8px;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');showAccount()">👤 Account</button>
-      <button class="hbtn" style="width:100%;margin-bottom:8px;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');showWatchlist()">⭐ Watchlist</button>
       <button class="hbtn primary" style="width:100%;padding:10px;font-size:11px;text-align:left" onclick="closeModal('mobile-menu-modal');manualRefresh()">↻ Refresh Data</button>
     </div>
   </div>
@@ -976,7 +960,7 @@ function switchMobilePanel(panel) {
   else if (panel === 'chart') document.getElementById('center-panel').classList.add('mob-active');
   else if (panel === 'analysis') document.getElementById('right-panel').classList.add('mob-active');
   // Update nav buttons
-  ['picks','chart','analysis'].forEach(p => {
+  ['picks','chart','analysis','account'].forEach(p => {
     const btn = document.getElementById('mnav-' + p);
     if (btn) btn.classList.toggle('active', p === panel);
   });
