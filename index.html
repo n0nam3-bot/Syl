@@ -311,16 +311,19 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   .stat-lbl{font-size:7px}
   .stat-sub{font-size:8px}
 
-  /* Main container: full height minus nav */
+  /* Hide statbar + alertbar — shown in dashboard panel instead */
+  #alert-bar,#statbar{display:none!important}
+
+  /* Main container: full height minus nav (no statbar/alertbar) */
   #main{
     display:block;
-    height:calc(100dvh - 42px - 22px - 42px - var(--mob-nav-h));
+    height:calc(100dvh - 42px - var(--mob-nav-h));
     overflow:hidden;
     position:relative;
   }
 
   /* All panels: absolute, fill container, hidden by default */
-  #left-panel,#center-panel,#right-panel{
+  #left-panel,#center-panel,#right-panel,#dashboard-panel{
     position:absolute;inset:0;
     width:100% !important;height:100% !important;
     border:none !important;
@@ -331,6 +334,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   #left-panel.mob-active{display:flex}
   #center-panel.mob-active{display:flex}
   #right-panel.mob-active{display:flex}
+  #dashboard-panel.mob-active{display:flex}
 
   /* Chart panel adjustments */
   #chart-header{padding:6px 8px;gap:5px;flex-wrap:wrap;align-items:flex-start}
@@ -394,11 +398,14 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
   .stat-val{font-size:10px}
   .stat-sub{display:none}
   .mobile-dash-btn{display:inline-flex;align-items:center;justify-content:center;flex:1;min-width:0}
-  #main{height:calc(100dvh - 36px - 20px - 32px - var(--mob-nav-h));display:block;overflow:hidden;position:relative}
-  #left-panel,#center-panel,#right-panel{position:absolute;inset:0;width:100% !important;height:100% !important;border:none !important;display:none;flex-direction:column}
+  /* Hide statbar + alertbar in landscape too */
+  #alert-bar,#statbar{display:none!important}
+  #main{height:calc(100dvh - 36px - var(--mob-nav-h));display:block;overflow:hidden;position:relative}
+  #left-panel,#center-panel,#right-panel,#dashboard-panel{position:absolute;inset:0;width:100% !important;height:100% !important;border:none !important;display:none;flex-direction:column}
   #left-panel.mob-active{display:flex}
   #center-panel.mob-active{display:flex}
   #right-panel.mob-active{display:flex}
+  #dashboard-panel.mob-active{display:flex}
   #chart-header{padding:4px 8px;gap:4px}
   .range-btn{padding:3px 4px;font-size:8px}
   #sector-wrap{height:26px;padding:2px 6px}
@@ -427,7 +434,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
     Market<span style="color:var(--green)">Tracker</span>
     <span class="logo-text-sub" style="color:var(--txt3);font-weight:300;font-size:10px">· Daily Picks</span>
   </div>
-  <button class="hbtn primary mobile-dash-btn" onclick="switchMobilePanel('picks')">🏠 Dashboard</button>
+  <button class="hbtn primary mobile-dash-btn" onclick="switchMobilePanel('dashboard')">🏠 Dashboard</button>
   <div id="live-badge"><div id="live-dot" class="loading"></div><span id="live-txt">Starting…</span></div>
   <div id="mps-wrap">
     <span id="mps-lbl">MPS</span>
@@ -469,6 +476,29 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 </div>
 
 <div id="main">
+  <!-- DASHBOARD (mobile only) -->
+  <div id="dashboard-panel" style="overflow-y:auto;background:var(--bg)">
+    <!-- Alert ticker -->
+    <div style="height:28px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;overflow:hidden;position:relative;flex-shrink:0">
+      <div style="font-size:9px;font-family:var(--font-mono);color:var(--txt3);padding:0 10px;flex-shrink:0;border-right:1px solid var(--border);height:100%;display:flex;align-items:center;background:var(--bg2);z-index:1">🔔</div>
+      <div style="flex:1;overflow:hidden;height:100%;position:relative">
+        <div id="dash-alert-scroll" style="display:flex;align-items:center;height:100%;white-space:nowrap;width:max-content"></div>
+      </div>
+    </div>
+    <!-- Stat cells grid -->
+    <div id="dash-statbar" style="display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0"></div>
+    <!-- Market pulse -->
+    <div style="padding:9px 12px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0">
+      <div class="rp-title">🌡 Market Pulse</div>
+      <div id="dash-mps-detail"></div>
+    </div>
+    <!-- Top picks preview -->
+    <div style="padding:9px 10px;flex:1">
+      <div class="rp-title">🎯 Top Picks</div>
+      <div id="dash-picks-preview"></div>
+    </div>
+  </div>
+
   <!-- LEFT: Picks -->
   <div id="left-panel" class="mob-active">
     <div id="picks-header">
@@ -569,7 +599,11 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--fo
 
 <!-- MOBILE BOTTOM NAV -->
 <nav id="mobile-nav">
-  <button class="mob-nav-btn active" id="mnav-picks" onclick="switchMobilePanel('picks')">
+  <button class="mob-nav-btn active" id="mnav-dashboard" onclick="switchMobilePanel('dashboard')">
+    <span class="mob-nav-icon">🏠</span>
+    <span class="mob-nav-label">Home</span>
+  </button>
+  <button class="mob-nav-btn" id="mnav-picks" onclick="switchMobilePanel('picks')">
     <span class="mob-nav-icon">🎯</span>
     <span class="mob-nav-label">Picks</span>
   </button>
@@ -924,7 +958,7 @@ const S = {
     loggedIn: false,
     watchlistLoaded: false,
   },
-  mobilePanel: 'picks', // picks | chart | analysis
+  mobilePanel: 'dashboard', // dashboard | picks | chart | analysis
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -946,21 +980,22 @@ function isMobile() {
 
 function initMobileNav() {
   if (!isMobile()) return;
-  switchMobilePanel('picks');
+  switchMobilePanel('dashboard');
 }
 
 function switchMobilePanel(panel) {
   if (!isMobile()) return;
   S.mobilePanel = panel;
   // Update panel visibility
-  document.getElementById('left-panel').classList.remove('mob-active');
-  document.getElementById('center-panel').classList.remove('mob-active');
-  document.getElementById('right-panel').classList.remove('mob-active');
-  if (panel === 'picks') document.getElementById('left-panel').classList.add('mob-active');
+  ['left-panel','center-panel','right-panel','dashboard-panel'].forEach(id => {
+    document.getElementById(id).classList.remove('mob-active');
+  });
+  if (panel === 'dashboard') document.getElementById('dashboard-panel').classList.add('mob-active');
+  else if (panel === 'picks') document.getElementById('left-panel').classList.add('mob-active');
   else if (panel === 'chart') document.getElementById('center-panel').classList.add('mob-active');
   else if (panel === 'analysis') document.getElementById('right-panel').classList.add('mob-active');
   // Update nav buttons
-  ['picks','chart','analysis','account'].forEach(p => {
+  ['dashboard','picks','chart','analysis','account'].forEach(p => {
     const btn = document.getElementById('mnav-' + p);
     if (btn) btn.classList.toggle('active', p === panel);
   });
@@ -968,10 +1003,47 @@ function switchMobilePanel(panel) {
   if (panel === 'analysis' && (!S.allNews || !S.allNews.length)) {
     loadNewsFallback().catch(()=>{});
   }
+  // Sync dashboard content when shown
+  if (panel === 'dashboard') renderDashboardPanel();
 }
 
 function showMobileMenu() {
   document.getElementById('mobile-menu-modal').classList.add('open');
+}
+
+function renderDashboardPanel() {
+  if (!isMobile()) return;
+  // Sync alert scroll
+  const alertSrc = document.getElementById('alert-scroll');
+  const alertDst = document.getElementById('dash-alert-scroll');
+  if (alertSrc && alertDst) {
+    alertDst.innerHTML = alertSrc.innerHTML;
+    alertDst.style.animation = alertSrc.style.animation;
+  }
+  // Sync stat cells
+  const statSrc = document.getElementById('statbar');
+  const statDst = document.getElementById('dash-statbar');
+  if (statSrc && statDst) statDst.innerHTML = statSrc.innerHTML;
+  // Sync MPS detail
+  const mpsSrc = document.getElementById('mps-detail');
+  const mpsDst = document.getElementById('dash-mps-detail');
+  if (mpsSrc && mpsDst) mpsDst.innerHTML = mpsSrc.innerHTML;
+  // Top picks preview
+  const dstPicks = document.getElementById('dash-picks-preview');
+  if (!dstPicks) return;
+  const picks = S.picks.top || [];
+  if (!picks.length) {
+    dstPicks.innerHTML = '<div style="color:var(--txt3);font-size:10px;font-family:var(--font-mono)">Scanning…</div>';
+    return;
+  }
+  dstPicks.innerHTML = picks.map(p => {
+    const cc = p.change1D >= 0 ? 'up' : 'dn';
+    return `<div class="pick-card c-top" style="margin-bottom:5px;cursor:pointer" onclick="selectPick('${p.ticker}');switchMobilePanel('chart')">
+      <div class="pc-row1"><span class="pc-ticker ${cc}">${p.ticker}</span><span class="pc-rank">#${p.rank}</span><span style="margin-left:auto;font-size:9px;color:var(--txt2);font-family:var(--font-mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px">${p.name}</span></div>
+      <div class="pc-price-row"><span class="pc-price">$${fmt2(p.price)}</span><span class="pc-chg ${cc}">${p.change1DFormatted}</span></div>
+      <div class="pc-reason">${p.reason}</div>
+    </div>`;
+  }).join('');
 }
 
 // Handle orientation change: re-apply correct layout
@@ -1107,6 +1179,7 @@ async function refresh(background=false) {
     if (!newsData || !newsData.length) {
       loadNewsFallback().catch(()=>{});
     }
+    if (isMobile() && S.mobilePanel === 'dashboard') renderDashboardPanel();
 
     if (S.chart.ticker && S.quotes[S.chart.ticker]) {
       updateTradeDisplay(S.chart.ticker);
